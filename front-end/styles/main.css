@@ -124,7 +124,11 @@ header {
     border-radius: 5px;
 }
 
-.text-playlist{
+.nombre{
+    color: white;
+}
+
+.artista{
     color: white;
 }
 

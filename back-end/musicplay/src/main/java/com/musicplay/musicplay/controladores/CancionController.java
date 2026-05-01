@@ -1,11 +1,20 @@
 package com.musicplay.musicplay.controladores;
 
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.musicplay.musicplay.modelos.Cancion;
+import com.musicplay.musicplay.modelos.CancionRR;
 import com.musicplay.musicplay.repos.CancionRepo;
 
 @RestController
@@ -19,23 +28,85 @@ public class CancionController {
     }
 
     //Método para crear una canción
-    @SuppressWarnings("null")           //Ignora errores de tipo null
-    @PostMapping("/api/crearCancion")   //Método Get
-    public void crearCancion() {
+    @SuppressWarnings("null")          //Ignora errores de tipo null
+    @CrossOrigin("*")
+    @PostMapping("/api/crearCancion")   //Método POST
+    public void crearCancion(@RequestBody Cancion cancion) {
 
-        Cancion cancion1 = new Cancion("Despacito","Luis Fonsi, Daddy Yankee","Luis Fonsi, Erika Ender","Reggaeton");
-        Cancion cancion2 = new Cancion("Adán y Eva","Paulo Londra","Paulo Londra, Ovy on the Drums","Reggaeton");
-        Cancion cancion3 = new Cancion("Tití me preguntó","Bad Bunny","Benito Antonio Martínez Ocasio, Marco Daniel Borrero","Reggaeton");
-        
-        //Guardar las canciones en la base de datos
-        List<Cancion> lista = List.of(cancion1,cancion2,cancion3);
-        repositorio.saveAll(lista);
+        repositorio.save(cancion);
 
     }
 
     //Método Get para obtener los registros de aplicacion en la base de datos
-    @GetMapping("/api/canciones")
-    public List<Cancion> obtenerCancion() {
-        return repositorio.findAll();
+    @CrossOrigin("*")
+    @GetMapping("/api/buscarCancion/{song_id}")
+    public ResponseEntity<Cancion> obtenerCancion(@NonNull @PathVariable Long song_id) {
+        
+        Optional<Cancion> opt = repositorio.findById(song_id);
+        
+        if (opt.isPresent()) {
+
+            return ResponseEntity.ok(opt.get());
+
+        } else {
+
+            return ResponseEntity.notFound().build();
+
+        }
+        
     }
+
+
+    //Metodo PUT para actualizar la informacion de una canción
+    @CrossOrigin("*")
+    @PutMapping("/api/actualizarCancion/{song_id}")
+    public ResponseEntity<String> actualizarCancion(@PathVariable @NonNull Long song_id, @RequestBody Cancion datosActualizados) {
+        
+        Optional<Cancion> opt = repositorio.findById(song_id);
+        
+        if (opt.isPresent()) {
+            
+            Cancion cancion = opt.get();
+            cancion.setSong_nombre(datosActualizados.getSong_nombre());
+            cancion.setSong_artista(datosActualizados.getSong_artista());
+            cancion.setSong_compositor(datosActualizados.getSong_compositor());
+            cancion.setSong_genero(datosActualizados.getSong_genero());
+            repositorio.save(cancion);
+            return ResponseEntity.ok("Datos actualizados con éxito!!");
+
+        } else {
+
+            return ResponseEntity.notFound().build();
+
+        }
+
+    }
+
+    //Método Get para la seccion de Canciones recientemente reproducidas
+    @CrossOrigin("*")
+    @GetMapping("/api/recientementeReproducidas")
+    public void cancionesRecientes(@RequestBody Cancion cancion){
+
+    }
+
+    @CrossOrigin("*")
+    @DeleteMapping("/api/eliminarCancion/{song_id}")
+    public ResponseEntity<Cancion> actualizarCancion(@PathVariable @NonNull Long song_id) {
+
+        Optional<Cancion> opt = repositorio.findById(song_id);
+        
+        if (opt.isPresent()) {
+
+            return ResponseEntity.ok(opt.get());
+
+        } else {
+
+            return ResponseEntity.notFound().build();
+
+        }
+
+    }
+
+
+
 }
