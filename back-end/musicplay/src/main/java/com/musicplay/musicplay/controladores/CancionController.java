@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.musicplay.musicplay.modelos.Cancion;
-import com.musicplay.musicplay.modelos.CancionRR;
 import com.musicplay.musicplay.repos.CancionRepo;
 
 @RestController

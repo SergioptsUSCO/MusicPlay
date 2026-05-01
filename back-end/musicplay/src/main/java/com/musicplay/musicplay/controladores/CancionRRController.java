@@ -3,8 +3,7 @@ package com.musicplay.musicplay.controladores;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
-import com.musicplay.musicplay.modelos.Cancion;
+import com.musicplay.musicplay.modelos.CancionRR;
 import com.musicplay.musicplay.repos.CancionRepo;
 
 public class CancionRRController {
@@ -20,7 +19,7 @@ public class CancionRRController {
     //Método Get para la seccion de Canciones recientemente reproducidas
     @CrossOrigin("*")
     @GetMapping("/api/recientementeReproducidas")
-    public void cancionesRecientes(@RequestBody Cancion cancion){
+    public void cancionesRecientes(@RequestBody CancionRR cancion){
 
 
 
