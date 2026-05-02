@@ -23,19 +23,19 @@ public class Cancion {
     
     @Id         //Definiendo ID
     @GeneratedValue(strategy = GenerationType.IDENTITY)       //Id se va auto-incrementando
-    Long song_id;
+    private Long song_id;
 
     @Column(name = "song_nombre")
-    String song_nombre;
+    private String song_nombre;
                                                                     
     @Column(name = "song_artista")                                     //@column para configurar
-    String song_artista;                                                //El nombre de las columnas
+    private String song_artista;                                                //El nombre de las columnas
 
     @Column(name = "song_compositor")
-    String song_compositor;
+    private String song_compositor;
 
     @Column(name = "song_genero")
-    String song_genero;
+    private String song_genero;
 
     public Cancion(String song_nombre, String song_artista, String song_compositor, String song_genero) {
         super();

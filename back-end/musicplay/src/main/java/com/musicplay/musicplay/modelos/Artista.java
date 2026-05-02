@@ -19,13 +19,13 @@ public class Artista {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long artista_id;
+    private Long artista_id;
 
     @Column(name="artista_nombre")
-    String artista_nombre;
+    private String artista_nombre;
 
     @Column(name="album_artista")
-    String album_artista;
+    private String album_artista;
 
     public Artista(Long artista_id, String artista_nombre, String album_artista){
         super();
