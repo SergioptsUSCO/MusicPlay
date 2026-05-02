@@ -8,29 +8,28 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.*;
 
-
-@Entity
-@Setter
 @Getter
+@Setter
 @NoArgsConstructor
-@Table(name = "playlist")
-public class Playlist {
+@Entity
+@Table(name = "likes")
+public class Likes {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long playlist_id;
-
-    @Column(name = "playlist_nombre")
-    private String playlist_nombre;
+    private Long id;
 
     @Column(name = "usuario_id")
     private Long usuario_id;
 
-    public Playlist(Long playlist_id, String playlist_nombre, Long usuario_id) {
+    @Column(name = "cancion_id")
+    private Long cancion_id;
+
+    public Likes(Long id, Long usuario_id, Long cancion_id) {
         super();
-        this.playlist_id = playlist_id;
-        this.playlist_nombre = playlist_nombre;
+        this.id = id;
         this.usuario_id = usuario_id;
+        this.cancion_id = cancion_id;
     }
 
 }
