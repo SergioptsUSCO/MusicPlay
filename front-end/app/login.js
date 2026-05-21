@@ -34,6 +34,11 @@ if (!form) {
                 console.log('Status:', response.status);
 
                 if (response.ok) {
+                    const body = await response.json();
+                    if (body.token) {
+                        localStorage.setItem('jwtToken', body.token);
+                    }
+
                     alert("Bienvenido");
 
                     window.location.href =

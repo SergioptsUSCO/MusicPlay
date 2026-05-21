@@ -3,6 +3,7 @@ package com.musicplay.musicplay.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -17,6 +18,7 @@ import com.musicplay.musicplay.services.CustomUserDetailsService;
 
 @Configuration
 @EnableWebSecurity
+@Order(1)
 public class SecurityConfig {
 
     @Autowired
@@ -48,6 +50,7 @@ public class SecurityConfig {
             throws Exception {
 
         http
+                .securityMatcher("/api/auth/**")
                 .cors(Customizer.withDefaults())
                 
                 .csrf(csrf -> csrf.disable())
@@ -55,14 +58,8 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider())
 
                 .authorizeHttpRequests(auth -> auth
-
-                        .requestMatchers(
-                                "/api/auth/**"
-                        ).permitAll()
-                        .requestMatchers("/admin/**")
-                        .hasRole("ADMIN")
-                        .anyRequest()
-                        .authenticated()
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .anyRequest().permitAll()
                 )
 
                 .formLogin(form -> form.disable())

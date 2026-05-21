@@ -12,36 +12,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.musicplay.musicplay.dto.JwtResponse;
 import com.musicplay.musicplay.dto.LoginRequest;
-import com.musicplay.musicplay.dto.RegistroRequest;
 import com.musicplay.musicplay.security.JwtUtils;
-import com.musicplay.musicplay.services.AuthService;
 
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin("*")
-public class AuthController {
+public class JwtAuthController {
 
     @Autowired
-    private AuthService service;
-
-    @Autowired
-    private AuthenticationManager manager;
+    private AuthenticationManager authenticationManager;
 
     @Autowired
     private JwtUtils jwtUtils;
 
-    @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegistroRequest request) {
-        return ResponseEntity.ok(
-                service.register(request)
-        );
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<JwtResponse> login(
-            @RequestBody LoginRequest request) {
-
-        Authentication authentication = manager.authenticate(
+    @PostMapping("/token")
+    public ResponseEntity<JwtResponse> token(@RequestBody LoginRequest request) {
+        Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getUsuario_correo(),
                         request.getUsuario_contraseña()
