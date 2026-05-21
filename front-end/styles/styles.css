@@ -1,5 +1,6 @@
 body, .main-pg {
     background: #060a08;
+    font-family: 'Inter', sans-serif;
 }
 
 header {
@@ -13,6 +14,7 @@ header {
 .col-md-3.mb-2.mb-md-0 {
     margin-left: 10px;
     color: white;
+    font-weight: bold !important;
 }
 
 .col-md-3.text-end {
@@ -22,6 +24,7 @@ header {
 .btn.btn-outline-primary.me-2 {
     color: #57C785;
     border-color: #57C785 !important;
+    font-weight: bold !important;
 }
 
 .btn.btn-primary {
@@ -30,6 +33,7 @@ header {
     border-color: #57C785 !important;
     color: white;
     transition: all 0.3s ease;
+    font-weight: bold !important;
 }
 
 .btn.btn-primary:hover {
@@ -164,4 +168,12 @@ main {
 .col {
     display: flex;
     flex-direction: column;
+}
+
+.p-02.mb-4 {
+    color: white !important;
+}
+
+.d-flex.flex-wrap.align-items-center.justify-content-center.justify-content-md-between.py-3.mb-4.border-bottom {
+    border-bottom: 1px solid #444444 !important;
 }

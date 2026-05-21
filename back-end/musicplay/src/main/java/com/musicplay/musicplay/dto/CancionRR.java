@@ -1,4 +1,4 @@
-package com.musicplay.musicplay.modelos;
+package com.musicplay.musicplay.dto;
 
 import lombok.Getter;
 

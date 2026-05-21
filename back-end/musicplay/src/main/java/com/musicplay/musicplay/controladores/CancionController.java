@@ -1,6 +1,5 @@
 package com.musicplay.musicplay.controladores;
 
-import java.util.List;
 import java.util.Optional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
@@ -77,13 +76,6 @@ public class CancionController {
             return ResponseEntity.notFound().build();
 
         }
-
-    }
-
-    //Método Get para la seccion de Canciones recientemente reproducidas
-    @CrossOrigin("*")
-    @GetMapping("/api/recientementeReproducidas")
-    public void cancionesRecientes(@RequestBody Cancion cancion){
 
     }
 

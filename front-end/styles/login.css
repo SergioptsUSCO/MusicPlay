@@ -1,0 +1,266 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #000000;
+  color: #ffffff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+}
+
+input {
+  font-family: inherit;
+}
+
+.site-header {
+  border-bottom: 1px solid #444444;
+  background-color: #000000;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 66px;
+  padding: 0 32px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-icon-wrapper {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-icon-wrapper img {
+  width: 40px;
+  height: 40px;
+  display: block;
+}
+
+.logo-text {
+  font-weight: 600;
+  font-size: 16px;
+  color: #ffffff;
+}
+
+.btn-register {
+  background: linear-gradient(90deg, rgba(87, 199, 133, 1) 24%, rgba(83, 237, 83, 1) 100%);
+  color: #ffffff;
+  padding: 8px 24px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  transition: opacity 0.2s ease;
+}
+
+.btn-register:hover {
+  opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+  .header-container {
+    padding: 0 20px;
+  }
+}
+
+.login-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #000000;
+}
+
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 80px 20px;
+  flex: 1;
+}
+
+.login-header {
+  margin-bottom: 48px;
+  text-align: center;
+}
+
+.login-title {
+  font-size: 48px;
+  font-weight: 700;
+  background: linear-gradient(90deg, rgba(87, 199, 133, 1) 24%, rgba(83, 237, 83, 1) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.login-form-card {
+  background-color: rgba(24, 24, 27, 0.5);
+  border: 1px solid #444444;
+  border-radius: 8px;
+  padding: 24px;
+  width: 100%;
+  max-width: 424px;
+  margin-bottom: 32px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 14px;
+  color: #ffffff;
+  font-weight: 500;
+}
+
+.input-container {
+  background-color: #1e1e1e;
+  border: 1px solid #444444;
+  border-radius: 8px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  transition: border-color 0.2s ease;
+}
+
+.input-container input {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  width: 100%;
+  font-size: 14px;
+  outline: none;
+}
+
+.input-container input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.input-container:focus-within {
+  border-color: #57C785;
+}
+
+.btn-submit {
+  background: linear-gradient(90deg, rgba(87, 199, 133, 1) 24%, rgba(83, 237, 83, 1) 100%);
+  color: #ffffff;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  width: 100%;
+  transition: opacity 0.2s ease;
+  margin-top: 8px;
+}
+
+.btn-submit:hover {
+  opacity: 0.9;
+}
+
+.forgot-password-link {
+  font-size: 14px;
+  color: #ffffff;
+  text-decoration: underline;
+  align-self: flex-start;
+  transition: color 0.2s ease;
+}
+
+.forgot-password-link:hover {
+  color: #57C785;
+}
+
+.divider {
+  margin-bottom: 32px;
+  color: #f5f5f5;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.social-login-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  width: 100%;
+}
+
+.btn-social {
+  background-color: #ffffff;
+  border: 1px solid #747775;
+  border-radius: 20px;
+  height: 40px;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: #1f1f1f;
+  font-size: 14px;
+  font-weight: 500;
+  min-width: 220px;
+  transition: background-color 0.2s ease;
+}
+
+.btn-social:hover {
+  background-color: #f3f4f6;
+}
+
+.btn-social img {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+@media (max-width: 480px) {
+  .login-title {
+    font-size: 36px;
+  }
+
+  .login-container {
+    padding: 40px 16px;
+  }
+
+  .login-form-card {
+    padding: 20px;
+  }
+}
