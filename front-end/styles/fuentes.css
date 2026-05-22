@@ -1,0 +1,445 @@
+/* ==========================================================================
+   TYPOGRAPHY SYSTEM - MusicPlay SPA
+   Centralized font, scale, and text color management
+   ========================================================================== */
+
+/* Google Fonts Import - Inter (400, 500, 600, 700) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* ==========================================================================
+   CSS VARIABLES - Font Family, Sizes, Weights, Colors, Line Heights
+   ========================================================================== */
+
+:root {
+  /* Font Family */
+  --font-family: 'Inter', sans-serif;
+  --font-family-fallback: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+
+  /* Font Weights */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Font Sizes - Heading Scale with clamp() for Responsivity */
+  --font-size-h1: clamp(56px, 12vw, 90px);
+  --font-size-h2: clamp(48px, 10vw, 70px);
+  --font-size-h3: clamp(32px, 8vw, 48px);
+  --font-size-h4: clamp(24px, 6vw, 32px);
+  --font-size-h5: clamp(18px, 4vw, 24px);
+  --font-size-h6: clamp(16px, 3vw, 18px);
+
+  /* Font Sizes - Body Text */
+  --font-size-body: 16px;
+  --font-size-body-lg: 18px;
+  --font-size-body-sm: 14px;
+  --font-size-body-xs: 12px;
+
+  /* Line Heights */
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.4;
+  --line-height-relaxed: 1.6;
+  --line-height-loose: 1.8;
+
+  /* Letter Spacing */
+  --letter-spacing-tight: -0.02em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.02em;
+
+  /* Text Colors - Dark Theme (MusicPlay dark background) */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #b3b3b3;
+  --color-text-muted: #999999;
+  --color-text-disabled: #7a7a7a;
+  --color-text-accent: #57C785; /* Green accent */
+  --color-text-accent-light: #82FFAA;
+  --color-text-error: #ff6b6b;
+  --color-text-warning: #ffa500;
+  --color-text-success: #57C785;
+
+  /* Font Rendering */
+  --font-smoothing: antialiased;
+  --text-rendering: optimizeLegibility;
+}
+
+/* ==========================================================================
+   GLOBAL TYPOGRAPHY BASE
+   ========================================================================== */
+
+html {
+  font-family: var(--font-family), var(--font-family-fallback);
+  font-size: 16px;
+  -webkit-font-smoothing: var(--font-smoothing);
+  -moz-osx-font-smoothing: var(--font-smoothing);
+  text-rendering: var(--text-rendering);
+}
+
+body,
+body.main-pg {
+  font-family: var(--font-family), var(--font-family-fallback);
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: var(--font-smoothing);
+  -moz-osx-font-smoothing: var(--font-smoothing);
+  text-rendering: var(--text-rendering);
+  background: #060a08;
+}
+
+/* ==========================================================================
+   SEMANTIC HTML ELEMENTS - Heading Scale
+   ========================================================================== */
+
+h1, .h1 {
+  font-size: var(--font-size-h1);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  margin: 0.5em 0;
+  color: var(--color-text-primary);
+}
+
+h2, .h2 {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  margin: 0.6em 0;
+  color: var(--color-text-primary);
+}
+
+h3, .h3 {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  margin: 0.7em 0;
+  color: var(--color-text-primary);
+}
+
+h4, .h4 {
+  font-size: var(--font-size-h4);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-normal);
+  margin: 0.8em 0;
+  color: var(--color-text-primary);
+}
+
+h5, .h5 {
+  font-size: var(--font-size-h5);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-normal);
+  margin: 0.9em 0;
+  color: var(--color-text-primary);
+}
+
+h6, .h6 {
+  font-size: var(--font-size-h6);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-normal);
+  margin: 1em 0;
+  color: var(--color-text-primary);
+}
+
+p {
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-relaxed);
+  margin: 0.5em 0;
+  color: var(--color-text-primary);
+}
+
+small,
+.small {
+  font-size: var(--font-size-body-sm);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-secondary);
+}
+
+strong,
+b {
+  font-weight: var(--font-weight-bold);
+}
+
+em,
+i {
+  font-style: italic;
+}
+
+/* ==========================================================================
+   UTILITY CLASSES - Text Sizes
+   ========================================================================== */
+
+.text-h1, .text-heading-1 {
+  font-size: var(--font-size-h1);
+  line-height: var(--line-height-tight);
+}
+
+.text-h2, .text-heading-2 {
+  font-size: var(--font-size-h2);
+  line-height: var(--line-height-tight);
+}
+
+.text-h3, .text-heading-3 {
+  font-size: var(--font-size-h3);
+  line-height: var(--line-height-tight);
+}
+
+.text-h4, .text-heading-4 {
+  font-size: var(--font-size-h4);
+  line-height: var(--line-height-normal);
+}
+
+.text-h5, .text-heading-5 {
+  font-size: var(--font-size-h5);
+  line-height: var(--line-height-normal);
+}
+
+.text-h6, .text-heading-6 {
+  font-size: var(--font-size-h6);
+  line-height: var(--line-height-normal);
+}
+
+.text-body, .text-base {
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-normal);
+}
+
+.text-body-lg, .text-lg {
+  font-size: var(--font-size-body-lg);
+  line-height: var(--line-height-normal);
+}
+
+.text-body-sm, .text-sm, .text-small {
+  font-size: var(--font-size-body-sm);
+  line-height: var(--line-height-normal);
+}
+
+.text-body-xs, .text-xs, .text-tiny {
+  font-size: var(--font-size-body-xs);
+  line-height: var(--line-height-normal);
+}
+
+/* ==========================================================================
+   UTILITY CLASSES - Font Weights
+   ========================================================================== */
+
+.text-regular {
+  font-weight: var(--font-weight-regular);
+}
+
+.text-medium {
+  font-weight: var(--font-weight-medium);
+}
+
+.text-semibold {
+  font-weight: var(--font-weight-semibold);
+}
+
+.text-bold {
+  font-weight: var(--font-weight-bold);
+}
+
+/* ==========================================================================
+   UTILITY CLASSES - Text Colors
+   ========================================================================== */
+
+.text-primary {
+  color: var(--color-text-primary);
+}
+
+.text-secondary {
+  color: var(--color-text-secondary);
+}
+
+.text-muted {
+  color: var(--color-text-muted);
+}
+
+.text-disabled {
+  color: var(--color-text-disabled);
+}
+
+.text-accent {
+  color: var(--color-text-accent);
+}
+
+.text-accent-light {
+  color: var(--color-text-accent-light);
+}
+
+.text-error {
+  color: var(--color-text-error);
+}
+
+.text-warning {
+  color: var(--color-text-warning);
+}
+
+.text-success {
+  color: var(--color-text-success);
+}
+
+.text-white {
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   UTILITY CLASSES - Text Alignment
+   ========================================================================== */
+
+.text-left {
+  text-align: left;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-justify {
+  text-align: justify;
+}
+
+/* ==========================================================================
+   UTILITY CLASSES - Text Transform
+   ========================================================================== */
+
+.text-uppercase {
+  text-transform: uppercase;
+}
+
+.text-lowercase {
+  text-transform: lowercase;
+}
+
+.text-capitalize {
+  text-transform: capitalize;
+}
+
+/* ==========================================================================
+   UTILITY CLASSES - Text Decoration
+   ========================================================================== */
+
+.text-underline {
+  text-decoration: underline;
+}
+
+.text-no-underline {
+  text-decoration: none;
+}
+
+.text-line-through {
+  text-decoration: line-through;
+}
+
+/* ==========================================================================
+   UTILITY CLASSES - Text Overflow & Truncation
+   ========================================================================== */
+
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.text-line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.text-line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ==========================================================================
+   BACKWARD COMPATIBILITY - Legacy Classes (from styles.css)
+   ========================================================================== */
+
+.title-01 {
+  font-size: var(--font-size-h1);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  color: var(--color-text-primary);
+}
+
+.p-01 {
+  font-size: clamp(14px, 3vw, 20px);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-primary);
+}
+
+.p-02 {
+  font-size: clamp(14px, 3vw, 20px);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-muted);
+}
+
+.title {
+  font-size: clamp(22px, 5vw, 32px);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+  color: var(--color-text-primary);
+}
+
+.title svg {
+  width: clamp(24px, 4vw, 30px);
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   RESPONSIVE TYPOGRAPHY - Mobile, Tablet, Desktop
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  :root {
+    --font-size-body: 14px;
+  }
+
+  h1, .h1 {
+    margin: 0.6em 0;
+  }
+
+  h2, .h2 {
+    margin: 0.7em 0;
+  }
+
+  p {
+    font-size: var(--font-size-body);
+    line-height: var(--line-height-relaxed);
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --font-size-body: 14px;
+  }
+
+  h1, .h1,
+  h2, .h2 {
+    margin: 0.8em 0;
+  }
+
+  p {
+    margin: 0.4em 0;
+  }
+
+  .text-h2, .text-heading-2 {
+    font-size: clamp(32px, 8vw, 48px);
+  }
+}

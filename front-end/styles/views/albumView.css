@@ -1,0 +1,16 @@
+.album-header{
+
+    display: flex;
+
+    gap: 30px;
+
+    align-items: end;
+}
+
+.album-header img{
+
+    width: 250px;
+
+    border-radius: 10px;
+}
+
