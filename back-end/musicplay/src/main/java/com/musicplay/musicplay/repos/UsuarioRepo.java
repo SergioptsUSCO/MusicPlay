@@ -13,4 +13,7 @@ import com.musicplay.musicplay.modelos.Usuario;
 public interface UsuarioRepo extends JpaRepository<Usuario, Long> {
     @Query("SELECT u FROM Usuario u WHERE u.usuario_correo = :correo")
     Optional<Usuario> findByUsuarioCorreo(@Param("correo") String usuario_correo);
+
+    @Query("SELECT u FROM Usuario u WHERE u.usuario_nombre = :nombre")
+    Optional<Usuario> findByUsuarioNombre(@Param("nombre") String usuario_nombre);
 }

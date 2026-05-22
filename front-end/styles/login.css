@@ -148,6 +148,22 @@ input {
   gap: 8px;
 }
 
+.form-error {
+  display: block;
+  border: 1px solid #ff4d4f;
+  background-color: rgba(255, 77, 79, 0.1);
+  color: #ff4d4f;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 14px;
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+
+.form-error:empty {
+  display: none;
+}
+
 .form-group label {
   font-size: 14px;
   color: #ffffff;

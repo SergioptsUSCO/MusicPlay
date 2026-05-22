@@ -25,6 +25,9 @@
 
     <form id="register-form" class="register-form" action="#" method="POST">
       <div class="form-group">
+
+        <p id="register-error" class="form-error" aria-live="polite"></p>
+
         <label for="username">Nombre de usuario</label>
         <div class="input-wrapper">
           <input
@@ -52,6 +55,8 @@
         <div class="input-wrapper">
           <input
             type="password"
+            pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$"
+            title="La contraseña debe tener al menos 8 caracteres, incluyendo al menos una mayúscula, una minúscula, un número y un carácter especial."
             id="password"
             placeholder="Ingresa tu contraseña..."
             required

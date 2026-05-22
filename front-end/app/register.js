@@ -21,28 +21,53 @@ async (e) => {
         document.getElementById("password").value
     };
 
-    const response = await fetch(
-        "http://localhost:8080/api/auth/register",
-        {
+    const errorElement = document.getElementById("register-error");
+    if (errorElement) {
+        errorElement.textContent = "";
+    }
 
-            method: "POST",
+    try {
+        const response = await fetch(
+            "http://localhost:8080/api/auth/register",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            }
+        );
 
-            headers: {
-                "Content-Type":
-                "application/json"
-            },
-
-            body: JSON.stringify(data)
-        }
-    );
-
-        if(response.ok){
-
+        if (response.ok) {
             alert("Usuario registrado");
+            window.location.href = "login.html";
+            return;
+        }
 
-            window.location.href =
-            "login.html";
+        const errorText = await response.text();
+        let message = errorText;
+        try {
+            const json = JSON.parse(errorText);
+            if (json.error) {
+                message = json.error;
+            }
+        } catch {
+            // No JSON body, use raw text.
+        }
+
+        if (errorElement) {
+            errorElement.textContent = message || "Error al registrar al usuario.";
+        } else {
+            alert(message || "Error al registrar al usuario.");
+        }
+    } catch (error) {
+        console.error('Fetch error:', error);
+        if (errorElement) {
+            errorElement.textContent = 'Error al conectar con el servidor: ' + error.message;
+        } else {
+            alert('Error al conectar con el servidor: ' + error.message);
         }
     }
+}
     );
 }

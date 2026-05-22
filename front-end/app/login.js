@@ -33,20 +33,38 @@ if (!form) {
 
                 console.log('Status:', response.status);
 
+                const errorElement = document.getElementById("login-error");
+                if (errorElement) {
+                    errorElement.textContent = "";
+                }
+
                 if (response.ok) {
                     const body = await response.json();
                     if (body.token) {
                         localStorage.setItem('jwtToken', body.token);
                     }
 
-                    alert("Bienvenido");
+                    console.log("Inicio de sesión exitoso");
+                    window.location.href = "home.html";
+                    return;
+                }
 
-                    window.location.href =
-                        "home.html";
+                const errorText = await response.text();
+                let message = errorText;
+                try {
+                    const json = JSON.parse(errorText);
+                    if (json.error) {
+                        message = json.error;
+                    }
+                } catch {
+                    // No JSON body, use raw text.
+                }
+
+                console.error('Error:', response.status, message);
+                if (errorElement) {
+                    errorElement.textContent = message || `Usuario o contraseña incorrectos.`;
                 } else {
-                    const errorText = await response.text();
-                    console.error('Error:', response.status, errorText);
-                    alert(`Error: ${response.status} - ${errorText || response.statusText}`);
+                    alert(`Error: ${response.status} - ${message || response.statusText}`);
                 }
             } catch (error) {
                 console.error('Fetch error:', error);
