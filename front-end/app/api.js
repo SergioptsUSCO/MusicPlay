@@ -1,4 +1,4 @@
-export const API_BASE_URL = "https://rq6pq57v-8080.use2.devtunnels.ms/";
+export const API_BASE_URL = "https://rq6pq57v-8080.use2.devtunnels.ms";
 
 export function getAuthToken() {
     return localStorage.getItem("jwtToken");

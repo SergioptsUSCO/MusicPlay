@@ -28,7 +28,7 @@ jobs:
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: front-end/page
+          path: front-end
 
       - id: deployment
         uses: actions/deploy-pages@v4
