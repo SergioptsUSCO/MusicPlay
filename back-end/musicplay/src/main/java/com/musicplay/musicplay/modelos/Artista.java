@@ -31,6 +31,9 @@ public class Artista {
     @Column(name="artista_nombre")
     private String artista_nombre;
 
+    @Column(name="artista_foto_ruta")
+    private String artista_foto_ruta;
+
 
     @JsonIgnore
     @OneToMany(mappedBy = "artista", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

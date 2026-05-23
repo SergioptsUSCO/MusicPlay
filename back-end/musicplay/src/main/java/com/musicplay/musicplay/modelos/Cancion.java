@@ -48,6 +48,12 @@ public class Cancion {
     @Column(name = "song_genero")
     private Long song_genero;
 
+    @Column(name = "song_archivo_ruta")
+    private String song_archivo_ruta;
+
+    @Column(name = "song_portada_ruta")
+    private String song_portada_ruta;
+
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "song_artista", referencedColumnName = "artista_id", insertable = false, updatable = false)

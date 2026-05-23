@@ -36,6 +36,9 @@ public class Album {
     @Column(name="artista_album")
     private Long artista_album;
 
+    @Column(name="album_portada_ruta")
+    private String album_portada_ruta;
+
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "artista_album", referencedColumnName = "artista_id", insertable = false, updatable = false)

@@ -1,6 +1,10 @@
 package com.musicplay.musicplay.repos;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.musicplay.musicplay.modelos.Artista;
@@ -8,4 +12,6 @@ import com.musicplay.musicplay.modelos.Artista;
 @Repository
 public interface ArtistaRepo extends JpaRepository<Artista,Long> {
 
+    @Query("select a from Artista a where lower(a.artista_nombre) = lower(:nombre)")
+    Optional<Artista> buscarPorNombre(@Param("nombre") String nombre);
 }

@@ -23,3 +23,15 @@ export function apiFetch(path, options = {}) {
         headers
     });
 }
+
+export function apiAssetUrl(path) {
+    if (!path) {
+        return "../assets/logo.svg";
+    }
+
+    if (path.startsWith("http")) {
+        return path;
+    }
+
+    return `${API_BASE_URL}${path}`;
+}

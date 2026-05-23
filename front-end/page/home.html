@@ -59,6 +59,10 @@
 
         <div class="d-flex align-items-center gap-3">
 
+            <a class="btn premium-btn" href="admin.html">
+                Admin
+            </a>
+
             <button class="btn premium-btn">
                 Premium
             </button>
@@ -184,17 +188,18 @@
     <div class="song-info">
 
         <img
-                src="https://picsum.photos/70"
-                alt="">
+                id="player-cover"
+                src="../assets/logo.svg"
+                alt="Portada">
 
         <div>
 
-            <h6>
-                Provenza
+            <h6 id="player-title">
+                Selecciona una cancion
             </h6>
 
-            <p>
-                Karol G
+            <p id="player-artist">
+                MusicPlay
             </p>
 
         </div>
@@ -203,25 +208,33 @@
 
     <div class="player-controls">
 
-        <button>
+        <button id="prev-btn" type="button" aria-label="Cancion anterior">
             ⏮
         </button>
 
-        <button class="play-btn">
+        <button class="play-btn" id="play-btn" type="button" aria-label="Reproducir">
             ▶
         </button>
 
-        <button>
+        <button id="next-btn" type="button" aria-label="Siguiente cancion">
             ⏭
         </button>
+
+        <div class="player-progress">
+            <span id="current-time">0:00</span>
+            <input id="progress-range" type="range" min="0" max="100" value="0">
+            <span id="duration-time">0:00</span>
+        </div>
 
     </div>
 
     <div class="volume-control">
 
-        <input type="range">
+        <input id="volume-range" type="range" min="0" max="1" step="0.01" value="0.8" aria-label="Volumen">
 
     </div>
+
+    <audio id="audio-player" preload="metadata"></audio>
 
 </footer>
 

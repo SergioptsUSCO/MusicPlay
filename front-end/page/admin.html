@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MusicPlay | Admin</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/logo.svg">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../styles/admin.css">
+</head>
+<body>
+    <nav class="admin-nav">
+        <a class="brand" href="home.html">
+            <img src="../assets/logo.svg" alt="MusicPlay" width="38" height="38">
+            <span>MusicPlay Admin</span>
+        </a>
+        <a class="btn btn-outline-light btn-sm" href="home.html">Volver</a>
+    </nav>
+
+    <main class="admin-shell">
+        <div class="admin-tabs" role="tablist" aria-label="CRUD admin">
+            <button class="tab-button active" type="button" data-tab="songs">Canciones</button>
+            <button class="tab-button" type="button" data-tab="artists">Artistas</button>
+            <button class="tab-button" type="button" data-tab="albums">Albumes</button>
+        </div>
+
+        <section class="crud-view active" id="songs-view">
+            <div class="admin-panel">
+                <div class="panel-header">
+                    <div>
+                        <p class="eyebrow">CRUD</p>
+                        <h1>Canciones</h1>
+                    </div>
+                    <button class="btn btn-success" type="button" id="new-song-btn">Nueva cancion</button>
+                </div>
+
+                <form id="song-form" class="entity-form">
+                    <input type="hidden" id="song-id">
+                    <div class="form-grid">
+                        <label>
+                            Nombre
+                            <input class="form-control" id="song-name" required>
+                        </label>
+                        <label>
+                            Artista
+                            <select class="form-control" id="song-artist" required></select>
+                        </label>
+                        <label>
+                            Album
+                            <select class="form-control" id="song-album" disabled>
+                                <option value="">Sin album</option>
+                            </select>
+                        </label>
+                        <label>
+                            Compositor
+                            <input class="form-control" id="song-composer">
+                        </label>
+                        <label>
+                            ID genero
+                            <input class="form-control" id="song-genre" type="number" min="1" required>
+                        </label>
+                    </div>
+                    <div class="file-grid">
+                        <label>
+                            Archivo de la cancion
+                            <input class="form-control" id="song-file" type="file" accept="audio/*">
+                        </label>
+                        <label>
+                            Portada de la cancion
+                            <input class="form-control" id="song-cover" type="file" accept="image/*">
+                        </label>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn btn-success" type="submit" id="song-save-btn">Guardar</button>
+                        <button class="btn btn-outline-light" type="button" id="song-cancel-btn">Cancelar</button>
+                    </div>
+                    <p id="song-message" class="form-message" role="status"></p>
+                </form>
+            </div>
+
+            <section class="table-panel">
+                <div class="table-responsive">
+                    <table class="table table-dark align-middle">
+                        <thead>
+                            <tr>
+                                <th>Portada</th>
+                                <th>Cancion</th>
+                                <th>Artista</th>
+                                <th>Genero</th>
+                                <th>Archivo</th>
+                                <th class="actions-col">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="songs-table-body"></tbody>
+                    </table>
+                </div>
+            </section>
+        </section>
+
+        <section class="crud-view" id="artists-view">
+            <div class="admin-panel">
+                <div class="panel-header">
+                    <div>
+                        <p class="eyebrow">CRUD</p>
+                        <h1>Artistas</h1>
+                    </div>
+                    <button class="btn btn-success" type="button" id="new-artist-btn">Nuevo artista</button>
+                </div>
+
+                <form id="artist-form" class="entity-form">
+                    <input type="hidden" id="artist-id">
+                    <div class="form-grid two-cols">
+                        <label>
+                            Nombre
+                            <input class="form-control" id="artist-name" required>
+                        </label>
+                        <label>
+                            Foto del artista
+                            <input class="form-control" id="artist-photo" type="file" accept="image/*">
+                        </label>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn btn-success" type="submit" id="artist-save-btn">Guardar</button>
+                        <button class="btn btn-outline-light" type="button" id="artist-cancel-btn">Cancelar</button>
+                    </div>
+                    <p id="artist-message" class="form-message" role="status"></p>
+                </form>
+            </div>
+
+            <section class="table-panel">
+                <div class="table-responsive">
+                    <table class="table table-dark align-middle">
+                        <thead>
+                            <tr>
+                                <th>Foto</th>
+                                <th>Artista</th>
+                                <th class="actions-col">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="artists-table-body"></tbody>
+                    </table>
+                </div>
+            </section>
+        </section>
+
+        <section class="crud-view" id="albums-view">
+            <div class="admin-panel">
+                <div class="panel-header">
+                    <div>
+                        <p class="eyebrow">CRUD</p>
+                        <h1>Albumes</h1>
+                    </div>
+                    <button class="btn btn-success" type="button" id="new-album-btn">Nuevo album</button>
+                </div>
+
+                <form id="album-form" class="entity-form">
+                    <input type="hidden" id="album-id">
+                    <div class="form-grid three-cols">
+                        <label>
+                            Nombre
+                            <input class="form-control" id="album-name" required>
+                        </label>
+                        <label>
+                            Artista
+                            <select class="form-control" id="album-artist" required></select>
+                        </label>
+                        <label>
+                            Portada del album
+                            <input class="form-control" id="album-cover" type="file" accept="image/*">
+                        </label>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn btn-success" type="submit" id="album-save-btn">Guardar</button>
+                        <button class="btn btn-outline-light" type="button" id="album-cancel-btn">Cancelar</button>
+                    </div>
+                    <p id="album-message" class="form-message" role="status"></p>
+                </form>
+            </div>
+
+            <section class="table-panel">
+                <div class="table-responsive">
+                    <table class="table table-dark align-middle">
+                        <thead>
+                            <tr>
+                                <th>Portada</th>
+                                <th>Album</th>
+                                <th>Artista</th>
+                                <th class="actions-col">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="albums-table-body"></tbody>
+                    </table>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <script type="module" src="../app/admin.js"></script>
+</body>
+</html>
