@@ -79,14 +79,16 @@ public class CancionController {
 
     }
 
+    @SuppressWarnings("null")
     @CrossOrigin("*")
     @DeleteMapping("/api/eliminarCancion/{song_id}")
-    public ResponseEntity<Cancion> actualizarCancion(@PathVariable @NonNull Long song_id) {
+    public ResponseEntity<Cancion> eliminarCancion(@PathVariable @NonNull Long song_id) {
 
         Optional<Cancion> opt = repositorio.findById(song_id);
         
         if (opt.isPresent()) {
 
+            repositorio.delete(opt.get());
             return ResponseEntity.ok(opt.get());
 
         } else {

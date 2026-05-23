@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.musicplay.musicplay.dto.JwtResponse;
 import com.musicplay.musicplay.dto.LoginRequest;
 import com.musicplay.musicplay.dto.RegistroRequest;
+import com.musicplay.musicplay.dto.UsuarioResponse;
+import com.musicplay.musicplay.modelos.Usuario;
 import com.musicplay.musicplay.security.JwtUtils;
 import com.musicplay.musicplay.services.AuthService;
 
@@ -36,7 +38,8 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegistroRequest request) {
         try {
-            return ResponseEntity.ok(service.register(request));
+            Usuario usuario = service.register(request);
+            return ResponseEntity.ok(new UsuarioResponse(usuario));
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest()
                     .body(Collections.singletonMap("error", ex.getMessage()));

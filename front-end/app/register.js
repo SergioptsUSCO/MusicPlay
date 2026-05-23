@@ -1,3 +1,5 @@
+import { apiFetch } from "./api.js";
+
 const form = document.getElementById("register-form");
 
 if (!form) {
@@ -27,8 +29,8 @@ async (e) => {
     }
 
     try {
-        const response = await fetch(
-            "http://localhost:8080/api/auth/register",
+        const response = await apiFetch(
+            "/api/auth/register",
             {
                 method: "POST",
                 headers: {

@@ -4,8 +4,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import com.musicplay.musicplay.config.JwtProperties;
 import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
@@ -18,17 +18,16 @@ import java.util.stream.Collectors;
 @Service
 public class JwtUtils {
 
-    @Value("${jwt.secret:musicplay-secret-key-2026-very-strong-and-long}")
-    private String jwtSecret;
-
-    @Value("${jwt.expiration:3600000}")
-    private long jwtExpirationMs;
-
+    private final JwtProperties jwtProperties;
     private SecretKey signingKey;
+
+    public JwtUtils(JwtProperties jwtProperties) {
+        this.jwtProperties = jwtProperties;
+    }
 
     @PostConstruct
     public void init() {
-        signingKey = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
+        signingKey = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8));
     }
 
     public String generateToken(Authentication authentication) {
@@ -38,7 +37,7 @@ public class JwtUtils {
                 .collect(Collectors.joining(","));
 
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + jwtExpirationMs);
+        Date expiryDate = new Date(now.getTime() + jwtProperties.getExpiration());
 
         return Jwts.builder()
                 .setSubject(username)

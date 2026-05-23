@@ -1,3 +1,5 @@
+import { apiFetch } from "./api.js";
+
 const form = document.getElementById("loginForm");
 
 if (!form) {
@@ -17,8 +19,8 @@ if (!form) {
             };
 
             try {
-                const response = await fetch(
-                    "http://localhost:8080/api/auth/login",
+                const response = await apiFetch(
+                    "/api/auth/login",
                     {
                         method: "POST",
 
