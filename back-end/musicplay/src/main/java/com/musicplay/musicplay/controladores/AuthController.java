@@ -8,6 +8,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,6 +19,7 @@ import com.musicplay.musicplay.dto.LoginRequest;
 import com.musicplay.musicplay.dto.RegistroRequest;
 import com.musicplay.musicplay.dto.UsuarioResponse;
 import com.musicplay.musicplay.modelos.Usuario;
+import com.musicplay.musicplay.repos.UsuarioRepo;
 import com.musicplay.musicplay.security.JwtUtils;
 import com.musicplay.musicplay.services.AuthService;
 
@@ -34,6 +36,9 @@ public class AuthController {
 
     @Autowired
     private JwtUtils jwtUtils;
+
+    @Autowired
+    private UsuarioRepo usuarioRepository;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegistroRequest request) {
@@ -63,5 +68,19 @@ public class AuthController {
             return ResponseEntity.status(401)
                     .body(Collections.singletonMap("error", "Usuario o contraseña incorrectos."));
         }
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> me(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(401)
+                    .body(Collections.singletonMap("error", "No autenticado."));
+        }
+
+        return usuarioRepository
+                .findByUsuarioCorreo(authentication.getName())
+                .<ResponseEntity<?>>map(usuario -> ResponseEntity.ok(new UsuarioResponse(usuario)))
+                .orElseGet(() -> ResponseEntity.status(404)
+                        .body(Collections.singletonMap("error", "Usuario no encontrado.")));
     }
 }

@@ -1,4 +1,4 @@
-import { handleOAuthRedirect }
+import { apiFetch, getAuthToken, handleOAuthRedirect }
 from "./api.js";
 
 import { loadHomeView }
@@ -11,6 +11,47 @@ import { loadAlbumView }
 from "./views/albumView.js";
 
 handleOAuthRedirect();
+
+if (!getAuthToken()) {
+    window.location.href = "login.html";
+}
+
+const logoutButton = document.getElementById("logout-btn");
+const profileInitial = document.getElementById("profile-initial");
+
+if (logoutButton) {
+    logoutButton.addEventListener("click", () => {
+        localStorage.removeItem("jwtToken");
+        window.location.href = "login.html";
+    });
+}
+
+async function loadCurrentUser() {
+    try {
+        const response = await apiFetch("/api/auth/me");
+
+        if (response.status === 401 || response.status === 403) {
+            localStorage.removeItem("jwtToken");
+            window.location.href = "login.html";
+            return;
+        }
+
+        if (!response.ok) {
+            return;
+        }
+
+        const user = await response.json();
+        const name = user.usuario_nombre || user.usuario_correo || "";
+        const initial = name.trim().charAt(0).toUpperCase();
+
+        if (profileInitial && initial) {
+            profileInitial.textContent = initial;
+            profileInitial.title = name;
+        }
+    } catch (error) {
+        console.error("Error al cargar el usuario actual:", error);
+    }
+}
 
 window.loadHomeView = function(){
 
@@ -50,4 +91,5 @@ window.closeSidebar = function(){
     }
 }
 
+loadCurrentUser();
 loadHomeView();

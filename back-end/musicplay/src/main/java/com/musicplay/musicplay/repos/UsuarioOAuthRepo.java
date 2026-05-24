@@ -13,6 +13,7 @@ import com.musicplay.musicplay.modelos.UsuarioOAuth;
 public interface UsuarioOAuthRepo extends JpaRepository<UsuarioOAuth, Long> {
     @Query("""
             SELECT uo FROM UsuarioOAuth uo
+            JOIN FETCH uo.usuario
             WHERE uo.oauth_proveedor = :proveedor
             AND uo.oauth_proveedor_id = :proveedorId
             """)

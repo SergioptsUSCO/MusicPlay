@@ -17,12 +17,14 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import com.musicplay.musicplay.services.CustomUserDetailsService;
+import com.musicplay.musicplay.security.JwtAuthenticationFilter;
 import com.musicplay.musicplay.security.OAuth2LoginFailureHandler;
 import com.musicplay.musicplay.security.OAuth2LoginSuccessHandler;
 
@@ -39,6 +41,9 @@ public class SecurityConfig {
 
     @Autowired
     private OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
+
+    @Autowired
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public AuthenticationProvider authenticationProvider(PasswordEncoder passwordEncoder) {
@@ -99,10 +104,14 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/api/auth/me").authenticated()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
                         .anyRequest().permitAll()
                 )
+
+                .addFilterBefore(jwtAuthenticationFilter,
+                        UsernamePasswordAuthenticationFilter.class)
 
                 .oauth2Login(oauth -> oauth
                         .successHandler(oAuth2LoginSuccessHandler)
