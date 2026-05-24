@@ -9,6 +9,16 @@
       "name": "jwt.expiration",
       "type": "java.lang.Long",
       "description": "JWT expiration time in milliseconds."
+    },
+    {
+      "name": "musicplay.oauth.success-url",
+      "type": "java.lang.String",
+      "description": "Frontend URL used after a successful OAuth login."
+    },
+    {
+      "name": "musicplay.oauth.failure-url",
+      "type": "java.lang.String",
+      "description": "Frontend URL used after a failed OAuth login."
     }
   ]
 }

@@ -15,7 +15,6 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -24,6 +23,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import com.musicplay.musicplay.services.CustomUserDetailsService;
+import com.musicplay.musicplay.security.OAuth2LoginFailureHandler;
+import com.musicplay.musicplay.security.OAuth2LoginSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -33,16 +34,17 @@ public class SecurityConfig {
     @Autowired
     private CustomUserDetailsService service;
 
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(service);
-        provider.setPasswordEncoder(passwordEncoder());
-        return provider;
-    }
+    @Autowired
+    private OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+
+    @Autowired
+    private OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    public AuthenticationProvider authenticationProvider(PasswordEncoder passwordEncoder) {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(service);
+        provider.setPasswordEncoder(passwordEncoder);
+        return provider;
     }
 
     @Bean
@@ -83,21 +85,28 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(
-            HttpSecurity http)
+            HttpSecurity http,
+            AuthenticationProvider authenticationProvider)
             throws Exception {
 
         http
-                .securityMatcher("/api/auth/**")
+                .securityMatcher("/api/auth/**", "/oauth2/**", "/login/oauth2/**")
                 .cors(Customizer.withDefaults())
                 
                 .csrf(csrf -> csrf.disable())
 
-                .authenticationProvider(authenticationProvider())
+                .authenticationProvider(authenticationProvider)
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
                         .anyRequest().permitAll()
+                )
+
+                .oauth2Login(oauth -> oauth
+                        .successHandler(oAuth2LoginSuccessHandler)
+                        .failureHandler(oAuth2LoginFailureHandler)
                 )
 
                 .formLogin(form -> form.disable())

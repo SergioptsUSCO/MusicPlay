@@ -1,3 +1,6 @@
+import { handleOAuthRedirect }
+from "./api.js";
+
 import { loadHomeView }
 from "./views/homeView.js";
 
@@ -6,6 +9,8 @@ from "./views/playlistView.js";
 
 import { loadAlbumView }
 from "./views/albumView.js";
+
+handleOAuthRedirect();
 
 window.loadHomeView = function(){
 

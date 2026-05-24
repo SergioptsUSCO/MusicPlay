@@ -62,6 +62,10 @@ public class Usuario {
     private List<Likes> likes = new ArrayList<>();
 
     @JsonIgnore
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<UsuarioOAuth> oauthAccounts = new ArrayList<>();
+
+    @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "usuario_playlist",

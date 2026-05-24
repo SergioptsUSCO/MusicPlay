@@ -1,6 +1,20 @@
-import { apiFetch } from "./api.js";
+import { apiFetch, getOAuthError, handleOAuthRedirect, startGoogleOAuth } from "./api.js";
 
 const form = document.getElementById("loginForm");
+const googleButton = document.getElementById("google-login");
+
+handleOAuthRedirect();
+
+const oauthError = getOAuthError();
+const loginErrorElement = document.getElementById("login-error");
+
+if (oauthError && loginErrorElement) {
+    loginErrorElement.textContent = `No se pudo iniciar sesion con Google: ${oauthError}`;
+}
+
+if (googleButton) {
+    googleButton.addEventListener("click", startGoogleOAuth);
+}
 
 if (!form) {
     console.error('Formulario de login no encontrado: id="loginForm"');

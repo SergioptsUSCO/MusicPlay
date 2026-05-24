@@ -1,4 +1,5 @@
 export const API_BASE_URL = "https://rq6pq57v-8080.use2.devtunnels.ms";
+export const GOOGLE_OAUTH_URL = `${API_BASE_URL}/oauth2/authorization/google`;
 
 export function getAuthToken() {
     return localStorage.getItem("jwtToken");
@@ -34,4 +35,34 @@ export function apiAssetUrl(path) {
     }
 
     return `${API_BASE_URL}${path}`;
+}
+
+export function handleOAuthRedirect() {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+
+    if (!token) {
+        return false;
+    }
+
+    localStorage.setItem("jwtToken", token);
+    window.history.replaceState({}, document.title, window.location.pathname);
+    window.location.href = "home.html";
+    return true;
+}
+
+export function getOAuthError() {
+    const params = new URLSearchParams(window.location.search);
+    const error = params.get("oauthError");
+
+    if (!error) {
+        return "";
+    }
+
+    window.history.replaceState({}, document.title, window.location.pathname);
+    return error;
+}
+
+export function startGoogleOAuth() {
+    window.location.href = GOOGLE_OAUTH_URL;
 }

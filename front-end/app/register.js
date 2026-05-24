@@ -1,6 +1,13 @@
-import { apiFetch } from "./api.js";
+import { apiFetch, handleOAuthRedirect, startGoogleOAuth } from "./api.js";
 
 const form = document.getElementById("register-form");
+const googleButton = document.getElementById("google-register");
+
+handleOAuthRedirect();
+
+if (googleButton) {
+    googleButton.addEventListener("click", startGoogleOAuth);
+}
 
 if (!form) {
     console.error('Formulario de registro no encontrado: id="register-form"');
