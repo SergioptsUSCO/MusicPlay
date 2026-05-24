@@ -40,6 +40,29 @@ public class JwtSecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/canciones",
+                                "/api/buscarCancion/**",
+                                "/api/canciones/**",
+                                "/api/artistas",
+                                "/api/buscarArtista/**",
+                                "/api/albumes",
+                                "/api/albumes/**",
+                                "/api/buscarAlbum/**",
+                                "/api/recientementeReproducidas",
+                                "/api/busqueda"
+                        ).permitAll()
+                        .requestMatchers(
+                                "/api/crearCancion",
+                                "/api/actualizarCancion/**",
+                                "/api/eliminarCancion/**",
+                                "/api/crearArtista",
+                                "/api/actualizarArtista/**",
+                                "/api/eliminarArtista/**",
+                                "/api/crearAlbum",
+                                "/api/actualizarAlbum/**",
+                                "/api/eliminarAlbum/**"
+                        ).hasRole("ADMIN")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )

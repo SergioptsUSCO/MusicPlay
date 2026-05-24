@@ -1,0 +1,32 @@
+package com.musicplay.musicplay.dto;
+
+import java.util.List;
+
+import com.musicplay.musicplay.modelos.Album;
+import com.musicplay.musicplay.modelos.Artista;
+import com.musicplay.musicplay.modelos.Cancion;
+
+public class BusquedaResponse {
+
+    private List<Cancion> canciones;
+    private List<Album> albumes;
+    private List<Artista> artistas;
+
+    public BusquedaResponse(List<Cancion> canciones, List<Album> albumes, List<Artista> artistas) {
+        this.canciones = canciones;
+        this.albumes = albumes;
+        this.artistas = artistas;
+    }
+
+    public List<Cancion> getCanciones() {
+        return canciones;
+    }
+
+    public List<Album> getAlbumes() {
+        return albumes;
+    }
+
+    public List<Artista> getArtistas() {
+        return artistas;
+    }
+}

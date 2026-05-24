@@ -44,10 +44,10 @@
 
             <a href="#" onclick="loadHomeView()"><img src="../assets/logo.svg" alt="MusicPlay Logo" width="40" height="40"></a>
 
-            <input
-                    type="text"
-                    class="form-control search-bar"
-                    placeholder="¿Qué quieres reproducir?">
+            <button id="search-view-btn" class="btn search-button" type="button" aria-label="Buscar">
+                <span aria-hidden="true">&#128269;</span>
+                Buscar
+            </button>
 
             <button class="btn inicio-btn" type="button" onclick="loadHomeView()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-house" viewBox="0 0 16 16">
@@ -59,7 +59,7 @@
 
         <div class="d-flex align-items-center gap-3">
 
-            <a class="btn premium-btn" href="admin.html">
+            <a id="admin-link" class="btn premium-btn" href="admin.html">
                 Admin
             </a>
 

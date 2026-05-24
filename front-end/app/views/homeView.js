@@ -156,6 +156,7 @@ function playSong(index) {
     document.getElementById("player-cover").src = apiAssetUrl(song.song_portada_ruta);
     document.getElementById("player-title").textContent = song.song_nombre ?? "Sin nombre";
     document.getElementById("player-artist").textContent = getArtistName(song.song_artista);
+    setPlayerSongInfoVisible(true);
     document.querySelectorAll(".song-play-row").forEach((row) => row.classList.remove("active"));
     document.querySelector(`[data-song-index="${index}"]`)?.classList.add("active");
 }
@@ -218,4 +219,12 @@ function formatDuration(seconds) {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = Math.floor(seconds % 60).toString().padStart(2, "0");
     return `${minutes}:${remainingSeconds}`;
+}
+
+function setPlayerSongInfoVisible(isVisible) {
+    const songInfo = document.querySelector(".song-info");
+
+    if (songInfo) {
+        songInfo.style.visibility = isVisible ? "visible" : "hidden";
+    }
 }

@@ -5,6 +5,21 @@ export function getAuthToken() {
     return localStorage.getItem("jwtToken");
 }
 
+export function isGuestSession() {
+    return localStorage.getItem("guestMode") === "true";
+}
+
+export function startGuestSession() {
+    localStorage.removeItem("jwtToken");
+    localStorage.setItem("guestMode", "true");
+    window.location.href = "home.html";
+}
+
+export function clearSession() {
+    localStorage.removeItem("jwtToken");
+    localStorage.removeItem("guestMode");
+}
+
 export function getAuthHeaders(extraHeaders = {}) {
     const token = getAuthToken();
     const headers = { ...extraHeaders };
@@ -46,6 +61,7 @@ export function handleOAuthRedirect() {
     }
 
     localStorage.setItem("jwtToken", token);
+    localStorage.removeItem("guestMode");
     window.history.replaceState({}, document.title, window.location.pathname);
     window.location.href = "home.html";
     return true;

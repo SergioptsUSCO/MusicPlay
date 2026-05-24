@@ -1,9 +1,12 @@
-import { apiFetch, getOAuthError, handleOAuthRedirect, startGoogleOAuth } from "./api.js";
+import { apiFetch, clearSession, getOAuthError, handleOAuthRedirect, startGoogleOAuth, startGuestSession } from "./api.js";
 
 const form = document.getElementById("loginForm");
 const googleButton = document.getElementById("google-login");
+const guestButton = document.getElementById("guest-login");
 
-handleOAuthRedirect();
+if (!handleOAuthRedirect()) {
+    clearSession();
+}
 
 const oauthError = getOAuthError();
 const loginErrorElement = document.getElementById("login-error");
@@ -14,6 +17,10 @@ if (oauthError && loginErrorElement) {
 
 if (googleButton) {
     googleButton.addEventListener("click", startGoogleOAuth);
+}
+
+if (guestButton) {
+    guestButton.addEventListener("click", startGuestSession);
 }
 
 if (!form) {
@@ -57,6 +64,7 @@ if (!form) {
                 if (response.ok) {
                     const body = await response.json();
                     if (body.token) {
+                        localStorage.removeItem("guestMode");
                         localStorage.setItem('jwtToken', body.token);
                     }
 

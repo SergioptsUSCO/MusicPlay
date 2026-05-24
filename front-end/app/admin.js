@@ -1,4 +1,4 @@
-import { apiAssetUrl, apiFetch } from "./api.js";
+import { apiAssetUrl, apiFetch, getAuthToken } from "./api.js";
 
 const state = {
     canciones: [],
@@ -396,44 +396,73 @@ async function deleteEntity(entity, id) {
     }
 }
 
-document.addEventListener("click", (event) => {
-    const tabButton = event.target.closest(".tab-button");
-    if (tabButton) {
-        document.querySelectorAll(".tab-button").forEach((button) => button.classList.remove("active"));
-        document.querySelectorAll(".crud-view").forEach((view) => view.classList.remove("active"));
-        tabButton.classList.add("active");
-        qs(`#${tabButton.dataset.tab}-view`).classList.add("active");
+async function canAccessAdmin() {
+    if (!getAuthToken()) {
+        window.location.href = "login.html";
+        return false;
+    }
+
+    const response = await apiFetch("/api/auth/me");
+    if (!response.ok) {
+        window.location.href = "login.html";
+        return false;
+    }
+
+    const user = await response.json();
+    if (user.usuario_rol !== 1) {
+        window.location.href = "home.html";
+        return false;
+    }
+
+    return true;
+}
+
+async function initAdmin() {
+    if (!(await canAccessAdmin())) {
         return;
     }
 
-    const actionButton = event.target.closest("button[data-entity]");
-    if (!actionButton) {
-        return;
-    }
+    document.addEventListener("click", (event) => {
+        const tabButton = event.target.closest(".tab-button");
+        if (tabButton) {
+            document.querySelectorAll(".tab-button").forEach((button) => button.classList.remove("active"));
+            document.querySelectorAll(".crud-view").forEach((view) => view.classList.remove("active"));
+            tabButton.classList.add("active");
+            qs(`#${tabButton.dataset.tab}-view`).classList.add("active");
+            return;
+        }
 
-    const id = Number(actionButton.dataset.id);
-    const { entity, action } = actionButton.dataset;
+        const actionButton = event.target.closest("button[data-entity]");
+        if (!actionButton) {
+            return;
+        }
 
-    if (action === "delete") {
-        deleteEntity(entity, id);
-    } else if (entity === "song") {
-        editSong(id);
-    } else if (entity === "artist") {
-        editArtist(id);
-    } else if (entity === "album") {
-        editAlbum(id);
-    }
-});
+        const id = Number(actionButton.dataset.id);
+        const { entity, action } = actionButton.dataset;
 
-qs("#song-artist").addEventListener("change", () => loadAlbumsForSongArtist());
-qs("#song-form").addEventListener("submit", saveSong);
-qs("#artist-form").addEventListener("submit", saveArtist);
-qs("#album-form").addEventListener("submit", saveAlbum);
-qs("#new-song-btn").addEventListener("click", resetSongForm);
-qs("#song-cancel-btn").addEventListener("click", resetSongForm);
-qs("#new-artist-btn").addEventListener("click", resetArtistForm);
-qs("#artist-cancel-btn").addEventListener("click", resetArtistForm);
-qs("#new-album-btn").addEventListener("click", resetAlbumForm);
-qs("#album-cancel-btn").addEventListener("click", resetAlbumForm);
+        if (action === "delete") {
+            deleteEntity(entity, id);
+        } else if (entity === "song") {
+            editSong(id);
+        } else if (entity === "artist") {
+            editArtist(id);
+        } else if (entity === "album") {
+            editAlbum(id);
+        }
+    });
 
-refreshAll();
+    qs("#song-artist").addEventListener("change", () => loadAlbumsForSongArtist());
+    qs("#song-form").addEventListener("submit", saveSong);
+    qs("#artist-form").addEventListener("submit", saveArtist);
+    qs("#album-form").addEventListener("submit", saveAlbum);
+    qs("#new-song-btn").addEventListener("click", resetSongForm);
+    qs("#song-cancel-btn").addEventListener("click", resetSongForm);
+    qs("#new-artist-btn").addEventListener("click", resetArtistForm);
+    qs("#artist-cancel-btn").addEventListener("click", resetArtistForm);
+    qs("#new-album-btn").addEventListener("click", resetAlbumForm);
+    qs("#album-cancel-btn").addEventListener("click", resetAlbumForm);
+
+    refreshAll();
+}
+
+initAdmin();
