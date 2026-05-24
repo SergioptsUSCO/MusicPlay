@@ -1,4 +1,4 @@
-import { apiAssetUrl, apiFetch } from "../api.js";
+import { apiAssetUrl, apiFetch, getAuthToken, isGuestSession } from "../api.js";
 
 let songs = [];
 let artists = [];
@@ -157,6 +157,7 @@ function playSong(index) {
     document.getElementById("player-title").textContent = song.song_nombre ?? "Sin nombre";
     document.getElementById("player-artist").textContent = getArtistName(song.song_artista);
     setPlayerSongInfoVisible(true);
+    recordPlayback(song.song_id);
     document.querySelectorAll(".song-play-row").forEach((row) => row.classList.remove("active"));
     document.querySelector(`[data-song-index="${index}"]`)?.classList.add("active");
 }
@@ -226,5 +227,26 @@ function setPlayerSongInfoVisible(isVisible) {
 
     if (songInfo) {
         songInfo.style.visibility = isVisible ? "visible" : "hidden";
+    }
+}
+
+async function recordPlayback(songId, duration = 0) {
+    if (!songId || !getAuthToken() || isGuestSession()) {
+        return;
+    }
+
+    try {
+        await apiFetch("/api/reproducciones", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                cancion_id: songId,
+                duracion_reproduccion: duration
+            })
+        });
+    } catch (error) {
+        console.error("No se pudo registrar la reproduccion:", error);
     }
 }

@@ -52,6 +52,7 @@ public class JwtSecurityConfig {
                                 "/api/recientementeReproducidas",
                                 "/api/busqueda"
                         ).permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/reproducciones").authenticated()
                         .requestMatchers(
                                 "/api/crearCancion",
                                 "/api/actualizarCancion/**",

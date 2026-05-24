@@ -345,6 +345,7 @@ function playSearchSong(song) {
     document.getElementById("player-title").textContent = song.song_nombre || "Sin nombre";
     document.getElementById("player-artist").textContent = getSearchArtistName(song.song_artista);
     setPlayerSongInfoVisible(true);
+    recordPlayback(song.song_id);
 }
 
 function getSearchArtistName(artistId) {
@@ -370,6 +371,27 @@ function escapeHtml(value) {
 
 function escapeAttribute(value) {
     return escapeHtml(value);
+}
+
+async function recordPlayback(songId, duration = 0) {
+    if (!songId || !getAuthToken() || isGuestSession()) {
+        return;
+    }
+
+    try {
+        await apiFetch("/api/reproducciones", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                cancion_id: songId,
+                duracion_reproduccion: duration
+            })
+        });
+    } catch (error) {
+        console.error("No se pudo registrar la reproduccion:", error);
+    }
 }
 
 window.toggleSidebar = function(){
