@@ -3,6 +3,7 @@ import { apiAssetUrl, apiFetch, getAuthToken, isGuestSession } from "../api.js";
 let songs = [];
 let artists = [];
 let currentIndex = -1;
+let likedSongIds = [];
 
 export async function loadHomeView(){
 
@@ -41,6 +42,7 @@ async function loadSongs() {
 
         songs = await songsResponse.json();
         artists = artistsResponse.ok ? await artistsResponse.json() : [];
+        likedSongIds = await loadLikedSongIds();
 
         count.textContent = `${songs.length} canciones`;
         renderSongs(list);
@@ -75,7 +77,11 @@ function renderSongs(list) {
                     </span>
                 </span>
                 <span>${getArtistName(song.song_artista)}</span>
-                <span id="song-duration-${index}">${song.song_archivo_ruta ? "--:--" : "-"}</span>
+                <span class="song-actions">
+                    <span id="song-duration-${index}">${song.song_archivo_ruta ? "--:--" : "-"}</span>
+                    ${!isGuestSession() ? `<span class="add-playlist-btn" role="button" tabindex="0" data-add-song="${song.song_id}">+</span>` : ""}
+                    ${!isGuestSession() ? `<span class="like-song-btn ${likedSongIds.includes(song.song_id) ? "liked" : ""}" role="button" tabindex="0" data-like-song="${song.song_id}">${likedSongIds.includes(song.song_id) ? "♥" : "♡"}</span>` : ""}
+                </span>
             </button>
         `).join("")}
     `;
@@ -83,6 +89,60 @@ function renderSongs(list) {
     list.querySelectorAll(".song-play-row").forEach((row) => {
         row.addEventListener("click", () => playSong(Number(row.dataset.songIndex)));
     });
+
+    list.querySelectorAll("[data-like-song]").forEach((button) => {
+        button.addEventListener("click", (event) => {
+            event.stopPropagation();
+            toggleSongLike(Number(button.dataset.likeSong), button);
+        });
+    });
+
+    list.querySelectorAll("[data-add-song]").forEach((button) => {
+        button.addEventListener("click", (event) => {
+            event.stopPropagation();
+            window.dispatchEvent(new CustomEvent("musicplay:add-song-to-playlist", {
+                detail: { songId: Number(button.dataset.addSong) }
+            }));
+        });
+    });
+}
+
+async function loadLikedSongIds() {
+    if (!getAuthToken() || isGuestSession()) {
+        return [];
+    }
+
+    try {
+        const response = await apiFetch("/api/likes");
+        return response.ok ? await response.json() : [];
+    } catch {
+        return [];
+    }
+}
+
+async function toggleSongLike(songId, button) {
+    const liked = likedSongIds.includes(songId);
+    button.disabled = true;
+
+    try {
+        const response = await apiFetch(`/api/likes/${songId}`, {
+            method: liked ? "DELETE" : "POST"
+        });
+
+        if (!response.ok) {
+            return;
+        }
+
+        likedSongIds = liked
+            ? likedSongIds.filter((id) => id !== songId)
+            : [...likedSongIds, songId];
+
+        button.classList.toggle("liked", !liked);
+        button.textContent = !liked ? "♥" : "♡";
+        window.dispatchEvent(new CustomEvent("musicplay:likes-updated"));
+    } finally {
+        button.disabled = false;
+    }
 }
 
 function setupPlayerControls() {
@@ -160,6 +220,14 @@ function playSong(index) {
     recordPlayback(song.song_id);
     document.querySelectorAll(".song-play-row").forEach((row) => row.classList.remove("active"));
     document.querySelector(`[data-song-index="${index}"]`)?.classList.add("active");
+}
+
+export function playSongQueue(nextSongs, nextArtists = [], startIndex = 0) {
+    setupPlayerControls();
+    songs = nextSongs;
+    artists = nextArtists;
+    currentIndex = -1;
+    playSong(startIndex);
 }
 
 function playAdjacent(direction) {

@@ -197,6 +197,24 @@ input {
   border-color: #57C785;
 }
 
+.password-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+}
+
+.password-toggle input {
+  width: 15px;
+  height: 15px;
+  accent-color: #57C785;
+  cursor: pointer;
+}
+
 .btn-submit {
   background: linear-gradient(90deg, rgba(87, 199, 133, 1) 24%, rgba(83, 237, 83, 1) 100%);
   color: #ffffff;

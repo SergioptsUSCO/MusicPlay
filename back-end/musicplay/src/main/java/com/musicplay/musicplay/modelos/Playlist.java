@@ -35,6 +35,9 @@ public class Playlist {
     @Column(name = "playlist_nombre")
     private String playlist_nombre;
 
+    @Column(name = "playlist_portada_ruta")
+    private String playlist_portada_ruta;
+
     @Column(name = "usuario_id")
     private Long usuario_id;
 

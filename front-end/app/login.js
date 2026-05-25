@@ -4,6 +4,15 @@ const form = document.getElementById("loginForm");
 const googleButton = document.getElementById("google-login");
 const guestButton = document.getElementById("guest-login");
 
+document.querySelectorAll("[data-toggle-password]").forEach((toggle) => {
+    toggle.addEventListener("change", () => {
+        const input = document.getElementById(toggle.dataset.togglePassword);
+        if (input) {
+            input.type = toggle.checked ? "text" : "password";
+        }
+    });
+});
+
 if (!handleOAuthRedirect()) {
     clearSession();
 }

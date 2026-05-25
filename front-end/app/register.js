@@ -3,6 +3,15 @@ import { apiFetch, handleOAuthRedirect, startGoogleOAuth } from "./api.js";
 const form = document.getElementById("register-form");
 const googleButton = document.getElementById("google-register");
 
+document.querySelectorAll("[data-toggle-password]").forEach((toggle) => {
+    toggle.addEventListener("change", () => {
+        const input = document.getElementById(toggle.dataset.togglePassword);
+        if (input) {
+            input.type = toggle.checked ? "text" : "password";
+        }
+    });
+});
+
 handleOAuthRedirect();
 
 if (googleButton) {

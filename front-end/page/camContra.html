@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles/camContra.css">
+    <link rel="icon" type="image/svg+xml" href="../assets/logo.svg">
+    <title>MusicPlay | Recuperar contraseña</title>
+</head>
+<body>
+    <section id="section-confirmation">
+        <div class="page-container">
+            <div class="content-wrapper">
+                <div class="card">
+                    <p id="reset-status" class="status" aria-live="polite"></p>
+
+                    <div id="step-email">
+                        <div class="card-header">
+                            <h1 class="title text-gradient">Recuperacion</h1>
+                            <h2 class="subtitle text-gradient">Ingresa tu correo</h2>
+                            <p class="desc">Te enviaremos un codigo de 6 digitos para verificar tu cuenta.</p>
+                        </div>
+
+                        <form id="emailForm" class="form">
+                            <div class="input-group">
+                                <label class="label text-gradient" for="reset-email">Correo electronico</label>
+                                <input
+                                    type="email"
+                                    id="reset-email"
+                                    class="input-field"
+                                    placeholder="Ingresa tu correo electronico"
+                                    autocomplete="email"
+                                    required
+                                >
+                                <span class="helper-text">Usa el correo registrado en Musicplay.</span>
+                            </div>
+
+                            <button type="submit" class="btn-primary bg-gradient">Enviar codigo</button>
+                        </form>
+                    </div>
+
+                    <div id="step-code" hidden>
+                        <div class="card-header">
+                            <h1 class="title text-gradient">Confirmacion</h1>
+                            <h2 class="subtitle text-gradient">Confirma tu correo electronico</h2>
+                            <p class="desc">Hemos enviado un codigo de verificacion a tu correo electronico</p>
+                            <p id="email-output" class="email"></p>
+                        </div>
+
+                        <form id="codeForm" class="form">
+                            <div class="input-group">
+                                <label class="label text-gradient" for="verification-code">Codigo de verificacion</label>
+                                <input
+                                    type="text"
+                                    id="verification-code"
+                                    class="input-field"
+                                    placeholder="Ingresa el codigo de 6 digitos"
+                                    inputmode="numeric"
+                                    maxlength="6"
+                                    autocomplete="one-time-code"
+                                    required
+                                >
+                                <span class="helper-text">Introduce el codigo de 6 digitos que recibiste por correo.</span>
+                            </div>
+
+                            <button type="submit" class="btn-primary bg-gradient">Verificar codigo</button>
+
+                            <div class="resend-group">
+                                <span class="resend-text">No recibiste el codigo?</span>
+                                <button type="button" id="resend-code" class="btn-link text-gradient">Reenviar codigo</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="step-password" hidden>
+                        <div class="card-header">
+                            <h1 class="title text-gradient">Nueva contraseña</h1>
+                            <h2 class="subtitle text-gradient">Actualiza tu acceso</h2>
+                            <p class="desc">Crea una nueva contraseña para volver a entrar a Musicplay.</p>
+                        </div>
+
+                        <form id="passwordForm" class="form">
+                            <div class="input-group">
+                                <label class="label text-gradient" for="new-password">Nueva contraseña</label>
+                                <input
+                                    type="password"
+                                    id="new-password"
+                                    class="input-field"
+                                    pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$"
+                                    title="La contraseña debe tener al menos 8 caracteres, incluyendo al menos una mayuscula, una minuscula, un numero y un caracter especial."
+                                    placeholder="Ingresa tu nueva contraseña"
+                                    autocomplete="new-password"
+                                    required
+                                >
+                                <span class="helper-text">Minimo 8 caracteres, una mayuscula, una minuscula, un numero y un caracter especial.</span>
+                            </div>
+                            <label class="password-toggle">
+                                <input type="checkbox" data-toggle-password="new-password">
+                                <span>Mostrar nueva contraseña</span>
+                            </label>
+
+                            <div class="input-group">
+                                <label class="label text-gradient" for="confirm-password">Confirmar contraseña</label>
+                                <input
+                                    type="password"
+                                    id="confirm-password"
+                                    class="input-field"
+                                    placeholder="Repite tu nueva contraseña"
+                                    autocomplete="new-password"
+                                    required
+                                >
+                            </div>
+                            <label class="password-toggle">
+                                <input type="checkbox" data-toggle-password="confirm-password">
+                                <span>Mostrar confirmacion</span>
+                            </label>
+
+                            <button type="submit" class="btn-primary bg-gradient">Cambiar contraseña</button>
+                        </form>
+                    </div>
+
+                    <div class="back-group">
+                        <button type="button" class="btn-back" data-back-login>
+                            <span aria-hidden="true">&larr;</span>
+                            <span>Volver al login</span>
+                        </button>
+                    </div>
+                </div>
+
+                <p class="footer-text">Si tienes problemas con la verificacion, contacta con nuestro soporte.</p>
+            </div>
+        </div>
+    </section>
+
+    <script type="module" src="../app/camContra.js"></script>
+</body>
+</html>
