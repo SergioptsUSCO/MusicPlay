@@ -43,6 +43,10 @@ public class Artista {
     @OneToMany(mappedBy = "artista", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Cancion> canciones = new ArrayList<>();
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "artista", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<UsuarioArtistaPreferido> usuariosPreferidos = new ArrayList<>();
+
     public Artista(Long artista_id, String artista_nombre){
         super();
         this.artista_id = artista_id;

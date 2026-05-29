@@ -2,10 +2,13 @@ import { apiAssetUrl, apiFetch, getAuthToken, isGuestSession } from "../api.js";
 
 let songs = [];
 let artists = [];
+let playbackSongs = [];
+let playbackArtists = [];
 let currentIndex = -1;
+let shouldWrapPlaybackQueue = true;
 let likedSongIds = [];
 
-export async function loadHomeView(){
+export async function loadHomeView() {
 
     const content = document.getElementById("content-view");
 
@@ -80,7 +83,7 @@ function renderSongs(list) {
                 <span class="song-actions">
                     <span id="song-duration-${index}">${song.song_archivo_ruta ? "--:--" : "-"}</span>
                     ${!isGuestSession() ? `<span class="add-playlist-btn" role="button" tabindex="0" data-add-song="${song.song_id}">+</span>` : ""}
-                    ${!isGuestSession() ? `<span class="like-song-btn ${likedSongIds.includes(song.song_id) ? "liked" : ""}" role="button" tabindex="0" data-like-song="${song.song_id}">${likedSongIds.includes(song.song_id) ? "♥" : "♡"}</span>` : ""}
+                    ${!isGuestSession() ? `<span class="like-song-btn ${likedSongIds.includes(song.song_id) ? "liked" : ""}" role="button" tabindex="0" data-like-song="${song.song_id}">${likedSongIds.includes(song.song_id) ? "\u2665" : "\u2661"}</span>` : ""}
                 </span>
             </button>
         `).join("")}
@@ -138,7 +141,7 @@ async function toggleSongLike(songId, button) {
             : [...likedSongIds, songId];
 
         button.classList.toggle("liked", !liked);
-        button.textContent = !liked ? "♥" : "♡";
+        button.textContent = !liked ? "\u2665" : "\u2661";
         window.dispatchEvent(new CustomEvent("musicplay:likes-updated"));
     } finally {
         button.disabled = false;
@@ -164,7 +167,7 @@ function setupPlayerControls() {
         if (!audio.src) {
             const firstPlayable = songs.findIndex((song) => song.song_archivo_ruta);
             if (firstPlayable >= 0) {
-                playSong(firstPlayable);
+                startPlaybackQueue(songs, artists, firstPlayable, true);
             }
             return;
         }
@@ -190,11 +193,11 @@ function setupPlayerControls() {
     });
 
     audio.addEventListener("play", () => {
-        playButton.textContent = "⏸";
+        playButton.textContent = "\u23f8";
     });
 
     audio.addEventListener("pause", () => {
-        playButton.textContent = "▶";
+        playButton.textContent = "\u25b6";
     });
 
     audio.addEventListener("timeupdate", updateProgress);
@@ -203,7 +206,11 @@ function setupPlayerControls() {
 }
 
 function playSong(index) {
-    const song = songs[index];
+    startPlaybackQueue(songs, artists, index, true);
+}
+
+function playPlaybackSong(index) {
+    const song = playbackSongs[index];
     if (!song || !song.song_archivo_ruta) {
         return;
     }
@@ -215,23 +222,43 @@ function playSong(index) {
 
     document.getElementById("player-cover").src = apiAssetUrl(song.song_portada_ruta);
     document.getElementById("player-title").textContent = song.song_nombre ?? "Sin nombre";
-    document.getElementById("player-artist").textContent = getArtistName(song.song_artista);
+    document.getElementById("player-artist").textContent = getArtistName(song.song_artista, playbackArtists);
     setPlayerSongInfoVisible(true);
     recordPlayback(song.song_id);
     document.querySelectorAll(".song-play-row").forEach((row) => row.classList.remove("active"));
     document.querySelector(`[data-song-index="${index}"]`)?.classList.add("active");
+    window.dispatchEvent(new CustomEvent("musicplay:playback-song-changed", {
+        detail: { songId: song.song_id }
+    }));
 }
 
 export function playSongQueue(nextSongs, nextArtists = [], startIndex = 0) {
     setupPlayerControls();
-    songs = nextSongs;
-    artists = nextArtists;
+    startPlaybackQueue(nextSongs, nextArtists, startIndex, false);
+}
+
+export function playSongShuffleQueue(nextSongs, nextArtists = []) {
+    setupPlayerControls();
+
+    const playableSongs = nextSongs.filter((song) => song.song_archivo_ruta);
+    if (!playableSongs.length) {
+        return false;
+    }
+
+    startPlaybackQueue(shuffleSongs(playableSongs), nextArtists, 0, false);
+    return true;
+}
+
+function startPlaybackQueue(nextSongs, nextArtists = [], startIndex = 0, shouldWrap = true) {
+    playbackSongs = nextSongs;
+    playbackArtists = nextArtists;
+    shouldWrapPlaybackQueue = shouldWrap;
     currentIndex = -1;
-    playSong(startIndex);
+    playPlaybackSong(startIndex);
 }
 
 function playAdjacent(direction) {
-    if (!songs.length) {
+    if (!playbackSongs.length) {
         return;
     }
 
@@ -239,13 +266,56 @@ function playAdjacent(direction) {
         ? (direction > 0 ? -1 : 0)
         : currentIndex;
 
-    for (let tries = 0; tries < songs.length; tries++) {
-        nextIndex = (nextIndex + direction + songs.length) % songs.length;
-        if (songs[nextIndex]?.song_archivo_ruta) {
-            playSong(nextIndex);
+    for (let tries = 0; tries < playbackSongs.length; tries++) {
+        nextIndex += direction;
+
+        if (nextIndex < 0 || nextIndex >= playbackSongs.length) {
+            if (!shouldWrapPlaybackQueue) {
+                if (direction > 0) {
+                    playFallbackQueue();
+                }
+                return;
+            }
+
+            nextIndex = (nextIndex + playbackSongs.length) % playbackSongs.length;
+        }
+
+        if (playbackSongs[nextIndex]?.song_archivo_ruta) {
+            playPlaybackSong(nextIndex);
             return;
         }
     }
+}
+
+function playFallbackQueue() {
+    const firstPlayable = songs.findIndex((song) => song.song_archivo_ruta);
+
+    if (firstPlayable < 0) {
+        return;
+    }
+
+    startPlaybackQueue(songs, artists, firstPlayable, true);
+}
+
+function shuffleSongs(sourceSongs) {
+    const shuffledSongs = [...sourceSongs];
+
+    for (let index = shuffledSongs.length - 1; index > 0; index--) {
+        const randomIndex = secureRandomIndex(index + 1);
+        [shuffledSongs[index], shuffledSongs[randomIndex]] = [shuffledSongs[randomIndex], shuffledSongs[index]];
+    }
+
+    return shuffledSongs;
+}
+
+function secureRandomIndex(maxExclusive) {
+    if (window.crypto?.getRandomValues) {
+        const randomValues = new Uint32Array(1);
+        window.crypto.getRandomValues(randomValues);
+        return randomValues[0] % maxExclusive;
+    }
+
+    return Math.floor(Math.random() * maxExclusive);
 }
 
 function updateProgress() {
@@ -276,8 +346,8 @@ function preloadDurations() {
     });
 }
 
-function getArtistName(artistId) {
-    return artists.find((artist) => artist.artista_id === artistId)?.artista_nombre ?? "Artista desconocido";
+function getArtistName(artistId, sourceArtists = artists) {
+    return sourceArtists.find((artist) => artist.artista_id === artistId)?.artista_nombre ?? "Artista desconocido";
 }
 
 function formatDuration(seconds) {

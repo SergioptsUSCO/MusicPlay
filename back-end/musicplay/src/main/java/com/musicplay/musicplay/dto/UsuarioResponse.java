@@ -8,6 +8,8 @@ public class UsuarioResponse {
     private String usuario_nombre;
     private String usuario_correo;
     private Integer usuario_rol;
+    private Integer usuario_inicios_sesion;
+    private Boolean usuario_preferencias_configuradas;
 
     public UsuarioResponse() {
     }
@@ -17,6 +19,8 @@ public class UsuarioResponse {
         this.usuario_nombre = usuario.getUsuario_nombre();
         this.usuario_correo = usuario.getUsuario_correo();
         this.usuario_rol = usuario.getUsuario_rol();
+        this.usuario_inicios_sesion = usuario.getUsuario_inicios_sesion() == null ? 0 : usuario.getUsuario_inicios_sesion();
+        this.usuario_preferencias_configuradas = Boolean.TRUE.equals(usuario.getUsuario_preferencias_configuradas());
     }
 
     public Long getUsuario_id() {
@@ -49,5 +53,21 @@ public class UsuarioResponse {
 
     public void setUsuario_rol(Integer usuario_rol) {
         this.usuario_rol = usuario_rol;
+    }
+
+    public Integer getUsuario_inicios_sesion() {
+        return usuario_inicios_sesion;
+    }
+
+    public void setUsuario_inicios_sesion(Integer usuario_inicios_sesion) {
+        this.usuario_inicios_sesion = usuario_inicios_sesion;
+    }
+
+    public Boolean getUsuario_preferencias_configuradas() {
+        return usuario_preferencias_configuradas;
+    }
+
+    public void setUsuario_preferencias_configuradas(Boolean usuario_preferencias_configuradas) {
+        this.usuario_preferencias_configuradas = usuario_preferencias_configuradas;
     }
 }

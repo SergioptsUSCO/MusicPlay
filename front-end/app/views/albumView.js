@@ -1,4 +1,4 @@
-export function loadAlbumView(){
+export function loadAlbumView() {
 
     const content =
     document.getElementById(
@@ -15,7 +15,7 @@ export function loadAlbumView(){
             <div>
 
                 <p>
-                    Álbum
+                    Album
                 </p>
 
                 <h1>

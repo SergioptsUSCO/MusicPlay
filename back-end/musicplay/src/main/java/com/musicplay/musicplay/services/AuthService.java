@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import com.musicplay.musicplay.dto.RegistroRequest;
 import com.musicplay.musicplay.modelos.Usuario;
 import com.musicplay.musicplay.repos.UsuarioRepo;
@@ -56,8 +57,15 @@ public class AuthService {
         );
 
         usuario.setUsuario_rol(2);
+        usuario.setUsuario_inicios_sesion(0);
+        usuario.setUsuario_preferencias_configuradas(false);
 
         return usuarioRepository.save(usuario);
+    }
+
+    @Transactional
+    public void registrarInicioSesion(String correo) {
+        usuarioRepository.incrementarIniciosSesionPorCorreo(correo);
     }
 
 }

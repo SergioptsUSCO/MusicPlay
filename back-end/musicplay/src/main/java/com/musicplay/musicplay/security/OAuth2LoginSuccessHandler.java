@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.musicplay.musicplay.modelos.Usuario;
+import com.musicplay.musicplay.services.AuthService;
 import com.musicplay.musicplay.services.OAuthUsuarioService;
 
 import jakarta.servlet.ServletException;
@@ -21,14 +22,17 @@ import jakarta.servlet.http.HttpServletResponse;
 public class OAuth2LoginSuccessHandler implements org.springframework.security.web.authentication.AuthenticationSuccessHandler {
 
     private final OAuthUsuarioService oauthUsuarioService;
+    private final AuthService authService;
     private final JwtUtils jwtUtils;
     private final String oauthSuccessUrl;
 
     public OAuth2LoginSuccessHandler(
             OAuthUsuarioService oauthUsuarioService,
+            AuthService authService,
             JwtUtils jwtUtils,
             @Value("${musicplay.oauth.success-url:http://localhost:5500/front-end/page/home.html}") String oauthSuccessUrl) {
         this.oauthUsuarioService = oauthUsuarioService;
+        this.authService = authService;
         this.jwtUtils = jwtUtils;
         this.oauthSuccessUrl = oauthSuccessUrl;
     }
@@ -45,6 +49,7 @@ public class OAuth2LoginSuccessHandler implements org.springframework.security.w
                 oauthToken.getAuthorizedClientRegistrationId(),
                 oauthToken.getPrincipal().getAttributes()
         );
+        authService.registrarInicioSesion(usuario.getUsuario_correo());
 
         String role = usuario.getUsuario_rol() == 1 ? "ROLE_ADMIN" : "ROLE_USER";
         UsernamePasswordAuthenticationToken jwtAuthentication =

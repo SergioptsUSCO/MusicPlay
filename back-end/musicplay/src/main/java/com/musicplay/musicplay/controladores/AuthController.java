@@ -70,6 +70,7 @@ public class AuthController {
             );
 
             String jwt = jwtUtils.generateToken(authentication);
+            service.registrarInicioSesion(authentication.getName());
             return ResponseEntity.ok(new JwtResponse(jwt));
         } catch (AuthenticationException ex) {
             return ResponseEntity.status(401)

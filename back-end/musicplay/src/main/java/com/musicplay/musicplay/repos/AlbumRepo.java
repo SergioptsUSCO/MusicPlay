@@ -3,6 +3,7 @@ package com.musicplay.musicplay.repos;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,4 +19,14 @@ public interface AlbumRepo extends JpaRepository<Album,Long> {
 
     @Query("select a from Album a where lower(a.album_nombre) = lower(:nombre) and a.artista_album = :artistaId")
     Optional<Album> buscarPorNombreYArtista(@Param("nombre") String nombre, @Param("artistaId") Long artistaId);
+
+    @Query("""
+            select ca.album from HistorialReproduccion h
+            join h.cancion c
+            join c.cancionesAlbum ca
+            join ca.album a
+            group by ca.album
+            order by count(h.id) desc, max(h.fecha_reproduccion) desc
+            """)
+    List<Album> albumesMasReproducidos(Pageable pageable);
 }

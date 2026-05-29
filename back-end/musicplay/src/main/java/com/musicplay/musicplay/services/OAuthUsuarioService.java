@@ -66,6 +66,7 @@ public class OAuthUsuarioService {
         usuario.setUsuario_correo(correo);
         usuario.setUsuario_contraseña(encoder.encode(UUID.randomUUID().toString()));
         usuario.setUsuario_rol(2);
+        usuario.setUsuario_preferencias_configuradas(false);
         return usuarioRepository.save(usuario);
     }
 

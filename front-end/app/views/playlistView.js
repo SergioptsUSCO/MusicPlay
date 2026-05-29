@@ -1,4 +1,4 @@
-export function loadPlaylistView(id){
+export function loadPlaylistView(id) {
 
     const content =
     document.getElementById(
@@ -15,7 +15,7 @@ export function loadPlaylistView(id){
             <div>
 
                 <p>
-                    Lista pública
+                    Lista publica
                 </p>
 
                 <h1>
@@ -23,7 +23,7 @@ export function loadPlaylistView(id){
                 </h1>
 
                 <span>
-                    Sergio • 23 canciones
+                    Sergio - 23 canciones
                 </span>
 
             </div>
@@ -43,9 +43,9 @@ export function loadPlaylistView(id){
             <div class="song-row header-row">
 
                 <span>#</span>
-                <span>Título</span>
-                <span>Álbum</span>
-                <span>Duración</span>
+                <span>Titulo</span>
+                <span>Album</span>
+                <span>Duracion</span>
 
             </div>
 

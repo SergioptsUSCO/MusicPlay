@@ -582,14 +582,14 @@ html{
     transform: scale(1.08);
 }
 
-.album-song-actions{
+.song-options-actions{
     position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
 }
 
-.album-song-menu-btn{
+.song-options-menu-btn{
     width: 30px;
     height: 30px;
     border-radius: 50%;
@@ -602,12 +602,12 @@ html{
     cursor: pointer;
 }
 
-.album-song-menu-btn:hover{
+.song-options-menu-btn:hover{
     background-color: rgba(255,255,255,0.08);
     color: white;
 }
 
-.album-song-options-menu{
+.song-options-menu{
     position: absolute;
     top: 34px;
     right: 0;
@@ -621,11 +621,11 @@ html{
     box-shadow: 0 14px 40px rgba(0,0,0,0.35);
 }
 
-.album-song-actions.menu-open .album-song-options-menu{
+.song-options-actions.menu-open .song-options-menu{
     display: grid;
 }
 
-.album-song-options-menu span{
+.song-options-menu span{
     display: flex;
     align-items: center;
     min-height: 38px;
@@ -638,11 +638,11 @@ html{
     cursor: pointer;
 }
 
-.album-song-options-menu span:hover{
+.song-options-menu span:hover{
     background-color: rgba(255,255,255,0.08);
 }
 
-.album-song-options-menu span.danger{
+.song-options-menu span.danger{
     color: #ff6b6b;
 }
 
@@ -668,6 +668,29 @@ html{
 .create-playlist-view{
     width: 100%;
     max-width: 560px;
+}
+
+.create-playlist-view .section-header{
+    align-items: flex-start;
+    margin-bottom: 18px;
+}
+
+.create-playlist-view .section-header p{
+    margin: 0 0 4px;
+    color: #1db954;
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.create-playlist-view .section-header h2{
+    margin: 0;
+}
+
+.create-playlist-view .section-header span{
+    display: block;
+    margin-top: 6px;
+    color: #b3b3b3;
 }
 
 .create-playlist-form{
@@ -730,6 +753,22 @@ html{
 .create-playlist-form .premium-btn{
     width: 100%;
     min-height: 44px;
+}
+
+.playlist-form-actions{
+    display: grid;
+    gap: 10px;
+}
+
+.playlist-form-actions .secondary-btn{
+    min-height: 44px;
+    border: 1px solid rgba(255,255,255,0.14);
+    background-color: rgba(255,255,255,0.08);
+    color: white;
+}
+
+.playlist-form-actions .secondary-btn:hover{
+    background-color: rgba(255,255,255,0.14);
 }
 
 .create-playlist-form input:focus{
@@ -914,6 +953,14 @@ html{
     box-shadow: none;
 }
 
+#catalog-search-btn{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    text-align: center;
+}
+
 .search-results{
     display: grid;
     gap: 24px;
@@ -1051,6 +1098,34 @@ html{
     border: none;
     background-color: #1db954;
     font-size: 30px;
+}
+
+.shuffle-play-btn{
+    width: 52px;
+    height: 52px;
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 50%;
+    background-color: rgba(255,255,255,0.08);
+    color: #d8d8d8;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.shuffle-play-btn:hover,
+.shuffle-play-btn.active{
+    background-color: rgba(29,185,84,0.18);
+    border-color: #1db954;
+    color: #79e8a6;
+    transform: scale(1.04);
+}
+
+.shuffle-play-btn svg{
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
 }
 
 .save-album-btn{

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Collections;
 import java.util.Optional;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
@@ -62,6 +63,18 @@ public class AlbumController {
     @GetMapping("/api/albumes")
     public ResponseEntity<List<Album>> listarAlbumes() {
         return ResponseEntity.ok(albumRepo.findAll());
+    }
+
+    @CrossOrigin("*")
+    @GetMapping("/api/destacados/albumes")
+    public ResponseEntity<List<Album>> listarAlbumesDestacados() {
+        List<Album> albumes = albumRepo.albumesMasReproducidos(PageRequest.of(0, 6));
+
+        if (albumes.isEmpty()) {
+            albumes = albumRepo.findAll(PageRequest.of(0, 6)).getContent();
+        }
+
+        return ResponseEntity.ok(albumes);
     }
 
     @CrossOrigin("*")

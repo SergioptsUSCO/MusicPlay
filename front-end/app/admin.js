@@ -3,7 +3,8 @@ import { apiAssetUrl, apiFetch, getAuthToken } from "./api.js";
 const state = {
     canciones: [],
     artistas: [],
-    albumes: []
+    albumes: [],
+    generos: []
 };
 
 const qs = (selector) => document.querySelector(selector);
@@ -18,6 +19,10 @@ function artistName(id) {
     return state.artistas.find((artist) => artist.artista_id === id)?.artista_nombre ?? id ?? "";
 }
 
+function genreName(id) {
+    return state.generos.find((genre) => genre.id === id)?.nombre_genero ?? id ?? "";
+}
+
 function renderArtistOptions() {
     const options = [
         `<option value="">Selecciona un artista</option>`,
@@ -26,6 +31,26 @@ function renderArtistOptions() {
 
     qs("#song-artist").innerHTML = options;
     qs("#album-artist").innerHTML = options;
+}
+
+function renderGenreOptions() {
+    const options = [
+        `<option value="">Selecciona un genero</option>`,
+        ...state.generos.map((genre) => `<option value="${genre.id}">${genre.nombre_genero}</option>`)
+    ].join("");
+
+    qs("#song-genre").innerHTML = options;
+}
+
+async function loadGenres() {
+    const response = await apiFetch("/api/generos");
+    if (!response.ok) {
+        throw new Error("No se pudieron cargar los generos");
+    }
+
+    state.generos = await response.json();
+    renderGenreOptions();
+    renderGenres();
 }
 
 async function loadArtists() {
@@ -61,6 +86,7 @@ async function loadSongs() {
 
 async function refreshAll() {
     try {
+        await loadGenres();
         await loadArtists();
         await loadAlbums();
         await loadSongs();
@@ -111,7 +137,7 @@ function renderSongs() {
                 </span>
             </td>
             <td>${artistName(song.song_artista)}</td>
-            <td>${song.song_genero ?? ""}</td>
+            <td>${genreName(song.song_genero)}</td>
             <td>
                 ${song.song_archivo_ruta
                     ? `<a href="${apiAssetUrl(song.song_archivo_ruta)}" target="_blank" rel="noreferrer">Ver archivo</a>`
@@ -180,6 +206,31 @@ function renderAlbums() {
     `).join("");
 }
 
+function renderGenres() {
+    const body = qs("#genres-table-body");
+    if (!state.generos.length) {
+        body.innerHTML = `<tr><td colspan="2">No hay generos registrados.</td></tr>`;
+        return;
+    }
+
+    body.innerHTML = state.generos.map((genre) => `
+        <tr>
+            <td>
+                <span class="entity-title">
+                    <strong>${genre.nombre_genero ?? ""}</strong>
+                    <small>ID ${genre.id}</small>
+                </span>
+            </td>
+            <td>
+                <div class="row-actions">
+                    <button class="btn btn-sm btn-outline-light" data-entity="genre" data-action="edit" data-id="${genre.id}">Editar</button>
+                    <button class="btn btn-sm btn-outline-danger" data-entity="genre" data-action="delete" data-id="${genre.id}">Eliminar</button>
+                </div>
+            </td>
+        </tr>
+    `).join("");
+}
+
 function resetSongForm() {
     qs("#song-form").reset();
     qs("#song-id").value = "";
@@ -187,6 +238,13 @@ function resetSongForm() {
     qs("#song-album").innerHTML = `<option value="">Sin album</option>`;
     qs("#song-album").disabled = true;
     setMessage("#song-message", "");
+}
+
+function resetGenreForm() {
+    qs("#genre-form").reset();
+    qs("#genre-id").value = "";
+    qs("#genre-save-btn").textContent = "Guardar";
+    setMessage("#genre-message", "");
 }
 
 function resetArtistForm() {
@@ -242,6 +300,12 @@ function albumFormData() {
         data.append("portadaAlbum", qs("#album-cover").files[0]);
     }
 
+    return data;
+}
+
+function genreFormData() {
+    const data = new FormData();
+    data.append("nombre_genero", qs("#genre-name").value.trim());
     return data;
 }
 
@@ -316,6 +380,30 @@ async function saveAlbum(event) {
     }
 }
 
+async function saveGenre(event) {
+    event.preventDefault();
+    const id = qs("#genre-id").value;
+    const path = id ? `/api/actualizarGenero/${id}` : "/api/crearGenero";
+
+    try {
+        const response = await apiFetch(path, {
+            method: id ? "PUT" : "POST",
+            body: genreFormData()
+        });
+
+        if (!response.ok) {
+            throw new Error(await response.text() || "No se pudo guardar el genero");
+        }
+
+        resetGenreForm();
+        setMessage("#genre-message", "Genero guardado correctamente.");
+        await loadGenres();
+        renderSongs();
+    } catch (error) {
+        setMessage("#genre-message", error.message, true);
+    }
+}
+
 async function editSong(id) {
     const song = state.canciones.find((item) => item.song_id === id);
     if (!song) {
@@ -367,11 +455,25 @@ function editAlbum(id) {
     window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+function editGenre(id) {
+    const genre = state.generos.find((item) => item.id === id);
+    if (!genre) {
+        return;
+    }
+
+    qs("#genre-id").value = genre.id;
+    qs("#genre-name").value = genre.nombre_genero ?? "";
+    qs("#genre-save-btn").textContent = "Actualizar";
+    setMessage("#genre-message", "Editando genero ID " + genre.id);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
 async function deleteEntity(entity, id) {
     const endpoint = {
         song: `/api/eliminarCancion/${id}`,
         artist: `/api/eliminarArtista/${id}`,
-        album: `/api/eliminarAlbum/${id}`
+        album: `/api/eliminarAlbum/${id}`,
+        genre: `/api/eliminarGenero/${id}`
     }[entity];
 
     if (!window.confirm("Eliminar este registro?")) {
@@ -380,7 +482,13 @@ async function deleteEntity(entity, id) {
 
     const response = await apiFetch(endpoint, { method: "DELETE" });
     if (!response.ok) {
-        const messageSelector = entity === "song" ? "#song-message" : entity === "artist" ? "#artist-message" : "#album-message";
+        const messageSelector = entity === "song"
+            ? "#song-message"
+            : entity === "artist"
+                ? "#artist-message"
+                : entity === "album"
+                    ? "#album-message"
+                    : "#genre-message";
         setMessage(messageSelector, await response.text() || "No se pudo eliminar el registro", true);
         return;
     }
@@ -391,8 +499,11 @@ async function deleteEntity(entity, id) {
         await loadArtists();
         await loadAlbums();
         renderSongs();
-    } else {
+    } else if (entity === "album") {
         await loadAlbums();
+    } else if (entity === "genre") {
+        await loadGenres();
+        renderSongs();
     }
 }
 
@@ -448,6 +559,8 @@ async function initAdmin() {
             editArtist(id);
         } else if (entity === "album") {
             editAlbum(id);
+        } else if (entity === "genre") {
+            editGenre(id);
         }
     });
 
@@ -455,12 +568,15 @@ async function initAdmin() {
     qs("#song-form").addEventListener("submit", saveSong);
     qs("#artist-form").addEventListener("submit", saveArtist);
     qs("#album-form").addEventListener("submit", saveAlbum);
+    qs("#genre-form").addEventListener("submit", saveGenre);
     qs("#new-song-btn").addEventListener("click", resetSongForm);
     qs("#song-cancel-btn").addEventListener("click", resetSongForm);
     qs("#new-artist-btn").addEventListener("click", resetArtistForm);
     qs("#artist-cancel-btn").addEventListener("click", resetArtistForm);
     qs("#new-album-btn").addEventListener("click", resetAlbumForm);
     qs("#album-cancel-btn").addEventListener("click", resetAlbumForm);
+    qs("#new-genre-btn").addEventListener("click", resetGenreForm);
+    qs("#genre-cancel-btn").addEventListener("click", resetGenreForm);
 
     refreshAll();
 }

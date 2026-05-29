@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
@@ -36,6 +37,18 @@ public class ArtistaController {
     @GetMapping("/api/artistas")
     public ResponseEntity<List<Artista>> listarArtistas() {
         return ResponseEntity.ok(artistaRepo.findAll());
+    }
+
+    @CrossOrigin("*")
+    @GetMapping("/api/tendencias/artistas")
+    public ResponseEntity<List<Artista>> listarArtistasEnTendencia() {
+        List<Artista> artistas = artistaRepo.artistasMasReproducidos(PageRequest.of(0, 6));
+
+        if (artistas.isEmpty()) {
+            artistas = artistaRepo.findAll(PageRequest.of(0, 6)).getContent();
+        }
+
+        return ResponseEntity.ok(artistas);
     }
 
     @CrossOrigin("*")

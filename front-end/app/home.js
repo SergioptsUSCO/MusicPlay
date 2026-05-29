@@ -1,7 +1,7 @@
 import { apiAssetUrl, apiFetch, clearSession, getAuthToken, handleOAuthRedirect, isGuestSession }
 from "./api.js";
 
-import { loadHomeView, playSongQueue }
+import { loadHomeView, playSongQueue, playSongShuffleQueue }
 from "./views/homeView.js";
 
 import { loadPlaylistView }
@@ -22,6 +22,7 @@ let searchArtists = [];
 let searchSongs = [];
 let searchAlbums = [];
 let searchTerm = "";
+let searchRequestId = 0;
 let savedAlbums = [];
 let likedSongIds = [];
 let userPlaylists = [];
@@ -48,6 +49,10 @@ window.addEventListener("musicplay:likes-updated", () => {
 
 window.addEventListener("musicplay:add-song-to-playlist", (event) => {
     openAddToPlaylistModal(event.detail.songId);
+});
+
+window.addEventListener("musicplay:playback-song-changed", (event) => {
+    markActiveCollectionSongById(event.detail.songId);
 });
 
 async function loadCurrentUser() {
@@ -209,27 +214,43 @@ function renderLibraryPlaylist(playlist) {
 }
 
 function loadCreatePlaylistView(playlist = null) {
-    const isEditing = Boolean(playlist);
+    const isEditing = Boolean(playlist?.playlist_id);
     const content = document.getElementById("content-view");
+    const title = isEditing ? "Editar playlist" : "Crear playlist";
+    const description = isEditing
+        ? "Actualiza el nombre o cambia la portada de tu playlist."
+        : "Ponle nombre y portada a una nueva playlist.";
+    const coverLabel = isEditing ? "Cambiar foto" : "Agregar foto";
+    const submitLabel = isEditing ? "Guardar cambios" : "Crear playlist";
+    const coverSrc = apiAssetUrl(playlist?.playlist_portada_ruta);
+    const nameValue = escapeAttribute(playlist?.playlist_nombre || "");
+
     content.innerHTML = `
-        <section class="create-playlist-view">
+        <section class="create-playlist-view ${isEditing ? "edit-playlist-view" : "new-playlist-view"}">
             <div class="section-header">
-                <h2>${isEditing ? "Editar playlist" : "Crear playlist"}</h2>
+                <div>
+                    <p>${isEditing ? "Playlist existente" : "Nueva playlist"}</p>
+                    <h2>${title}</h2>
+                    <span>${description}</span>
+                </div>
             </div>
 
             <form id="create-playlist-form" class="create-playlist-form">
                 <label class="playlist-cover-picker" for="playlist-cover-input">
-                    <img id="playlist-cover-preview" src="${apiAssetUrl(playlist?.playlist_portada_ruta)}" alt="Portada">
-                    <span>${isEditing ? "Cambiar foto" : "Agregar foto"}</span>
+                    <img id="playlist-cover-preview" src="${coverSrc}" alt="Portada">
+                    <span>${coverLabel}</span>
                 </label>
                 <input id="playlist-cover-input" type="file" accept="image/*">
 
                 <div class="input-group">
                     <label for="playlist-name-input">Nombre</label>
-                    <input id="playlist-name-input" type="text" placeholder="Nombre de la playlist" value="${escapeAttribute(playlist?.playlist_nombre || "")}" required>
+                    <input id="playlist-name-input" type="text" placeholder="Nombre de la playlist" value="${nameValue}" required>
                 </div>
 
-                <button class="btn premium-btn" type="submit">${isEditing ? "Guardar cambios" : "Crear playlist"}</button>
+                <div class="playlist-form-actions">
+                    <button class="btn premium-btn" type="submit">${submitLabel}</button>
+                    ${isEditing ? `<button class="btn secondary-btn" id="cancel-playlist-edit" type="button">Cancelar</button>` : ""}
+                </div>
             </form>
         </section>
     `;
@@ -240,6 +261,10 @@ function loadCreatePlaylistView(playlist = null) {
         if (file) {
             document.getElementById("playlist-cover-preview").src = URL.createObjectURL(file);
         }
+    });
+
+    document.getElementById("cancel-playlist-edit")?.addEventListener("click", () => {
+        loadPlaylistDetailView(playlist.playlist_id);
     });
 
     document.getElementById("create-playlist-form").addEventListener("submit", (event) => savePlaylist(event, playlist?.playlist_id));
@@ -464,7 +489,7 @@ async function loadSearchView() {
             </div>
 
             <div id="search-results" class="search-results">
-                <div class="song-list-state">Cargando catalogo...</div>
+                <div class="song-list-state">Escribe una cancion, album o artista para buscar.</div>
             </div>
         </section>
     `;
@@ -481,22 +506,32 @@ async function loadSearchView() {
     input.addEventListener("input", runSearch);
     button.addEventListener("click", () => searchCatalog(input.value));
     input.focus();
-    searchCatalog("");
 }
 
 async function searchCatalog(query) {
     const results = document.getElementById("search-results");
     const summary = document.getElementById("search-summary");
     const term = query.trim();
+    const requestId = ++searchRequestId;
 
     if (!term) {
-        summary.textContent = "Todo el catalogo";
+        summary.textContent = "Canciones, albumes y artistas";
+        results.innerHTML = `<div class="song-list-state">Escribe una cancion, album o artista para buscar.</div>`;
+        searchSongs = [];
+        searchAlbums = [];
+        searchTerm = "";
+        return;
     }
 
-    results.innerHTML = `<div class="song-list-state">${term ? "Buscando..." : "Cargando catalogo..."}</div>`;
+    results.innerHTML = `<div class="song-list-state">Buscando...</div>`;
 
     try {
         const data = await fetchSearchResults(term);
+
+        if (requestId !== searchRequestId) {
+            return;
+        }
+
         const canciones = data.canciones || [];
         const albumes = data.albumes || [];
         const artistas = data.artistas || [];
@@ -535,6 +570,10 @@ async function searchCatalog(query) {
             button.addEventListener("click", () => loadSearchAllView(button.dataset.showAll));
         });
     } catch (error) {
+        if (requestId !== searchRequestId) {
+            return;
+        }
+
         results.innerHTML = `<div class="song-list-state">${error.message}</div>`;
         summary.textContent = "Error";
     }
@@ -544,16 +583,22 @@ async function fetchSearchResults(term) {
     const response = await apiFetch(`/api/busqueda?q=${encodeURIComponent(term)}`);
 
     if (response.ok) {
-        const [data, artistsResponse] = await Promise.all([
-            response.json(),
-            apiFetch("/api/artistas")
-        ]);
-
-        searchArtists = artistsResponse.ok ? await artistsResponse.json() : data.artistas || [];
+        const data = await response.json();
+        searchArtists = mergeArtists(data.artistasRelacionados || data.artistas || []);
         return data;
     }
 
     return searchWithExistingCollections(term);
+}
+
+function mergeArtists(artists) {
+    const artistMap = new Map(searchArtists.map((artist) => [artist.artista_id, artist]));
+
+    artists.forEach((artist) => {
+        artistMap.set(artist.artista_id, artist);
+    });
+
+    return Array.from(artistMap.values());
 }
 
 async function searchWithExistingCollections(term) {
@@ -830,6 +875,13 @@ function renderCollectionView({ typeLabel, title, subtitle, image, likedCover = 
 
         <div class="playlist-actions">
             <button class="play-main-btn" id="collection-play-btn" type="button" aria-label="Reproducir">▶</button>
+            <button class="shuffle-play-btn" id="collection-shuffle-btn" type="button" aria-label="Reproducir aleatoriamente" title="Reproducir aleatoriamente">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M16 3h5v5h-2V6.41l-4.64 4.64-1.41-1.41L17.59 5H16V3Z"></path>
+                    <path d="M4 7h3.17c1.06 0 2.08.42 2.83 1.17l7.59 7.59V14H21v5h-5v-2h1.59L8.59 9H4V7Z"></path>
+                    <path d="M4 17h3.17c1.06 0 2.08-.42 2.83-1.17l1.88-1.88 1.41 1.41-1.88 1.88A6 6 0 0 1 7.17 19H4v-2Z"></path>
+                </svg>
+            </button>
             ${album && !isGuestSession() ? `
                 <button class="save-album-btn ${isAlbumSaved ? "saved" : ""}" id="save-album-btn" type="button" aria-label="Guardar album">
                     ${isAlbumSaved ? "Guardado" : "+"}
@@ -870,7 +922,18 @@ function renderCollectionView({ typeLabel, title, subtitle, image, likedCover = 
             playSongQueue(songs, artists, firstPlayable);
             currentCollectionStarted = true;
             playButton.textContent = "⏸";
+            document.getElementById("collection-shuffle-btn")?.classList.remove("active");
             markActiveCollectionSong(firstPlayable);
+        }
+    });
+
+    document.getElementById("collection-shuffle-btn")?.addEventListener("click", () => {
+        const shuffleButton = document.getElementById("collection-shuffle-btn");
+        const started = playSongShuffleQueue(songs, artists);
+        if (started) {
+            currentCollectionStarted = true;
+            document.getElementById("collection-play-btn").textContent = "⏸";
+            shuffleButton.classList.add("active");
         }
     });
 
@@ -882,6 +945,7 @@ function renderCollectionView({ typeLabel, title, subtitle, image, likedCover = 
             playSongQueue(songs, artists, index);
             currentCollectionStarted = true;
             document.getElementById("collection-play-btn").textContent = "⏸";
+            document.getElementById("collection-shuffle-btn")?.classList.remove("active");
             markActiveCollectionSong(index);
         });
     });
@@ -900,11 +964,11 @@ function renderCollectionView({ typeLabel, title, subtitle, image, likedCover = 
         });
     });
 
-    content.querySelectorAll("[data-album-song-menu]").forEach((button) => {
+    content.querySelectorAll("[data-song-options-menu]").forEach((button) => {
         button.addEventListener("click", (event) => {
             event.stopPropagation();
-            const actions = button.closest(".album-song-actions");
-            content.querySelectorAll(".album-song-actions.menu-open").forEach((openActions) => {
+            const actions = button.closest(".song-options-actions");
+            content.querySelectorAll(".song-options-actions.menu-open").forEach((openActions) => {
                 if (openActions !== actions) {
                     openActions.classList.remove("menu-open");
                 }
@@ -913,25 +977,18 @@ function renderCollectionView({ typeLabel, title, subtitle, image, likedCover = 
         });
     });
 
-    content.querySelectorAll("[data-album-add-song]").forEach((button) => {
+    content.querySelectorAll("[data-menu-add-song]").forEach((button) => {
         button.addEventListener("click", (event) => {
             event.stopPropagation();
-            button.closest(".album-song-actions")?.classList.remove("menu-open");
-            openAddToPlaylistModal(Number(button.dataset.albumAddSong));
-        });
-    });
-
-    content.querySelectorAll("[data-remove-album-song]").forEach((button) => {
-        button.addEventListener("click", async (event) => {
-            event.stopPropagation();
-            button.closest(".album-song-actions")?.classList.remove("menu-open");
-            await removeSongFromAlbum(albumId, Number(button.dataset.removeAlbumSong));
+            button.closest(".song-options-actions")?.classList.remove("menu-open");
+            openAddToPlaylistModal(Number(button.dataset.menuAddSong));
         });
     });
 
     content.querySelectorAll("[data-remove-playlist-song]").forEach((button) => {
         button.addEventListener("click", async (event) => {
             event.stopPropagation();
+            button.closest(".song-options-actions")?.classList.remove("menu-open");
             await removeSongFromPlaylist(playlistId, Number(button.dataset.removePlaylistSong));
         });
     });
@@ -949,9 +1006,9 @@ async function toggleAlbumInLibrary(albumId) {
 
     if (isSaved) {
         const confirmed = await openConfirmDialog({
-            title: "Desguardar album",
+            title: "Quitar album",
             message: "Seguro que quieres quitar este album de tu biblioteca?",
-            confirmText: "Desguardar",
+            confirmText: "Quitar",
             danger: true
         });
 
@@ -1107,34 +1164,6 @@ async function removeSongFromPlaylist(playlistId, songId) {
     }
 }
 
-async function removeSongFromAlbum(albumId, songId) {
-    const confirmed = await openConfirmDialog({
-        title: "Borrar cancion",
-        message: "Seguro que quieres quitar esta cancion del album?",
-        confirmText: "Borrar cancion",
-        danger: true
-    });
-
-    if (!confirmed) {
-        return;
-    }
-
-    try {
-        const response = await apiFetch(`/api/albumes/${albumId}/canciones/${songId}`, {
-            method: "DELETE"
-        });
-
-        if (!response.ok) {
-            const message = await response.text();
-            throw new Error(message || "No se pudo quitar la cancion del album.");
-        }
-
-        loadAlbumDetailView(albumId);
-    } catch (error) {
-        alert(error.message);
-    }
-}
-
 function renderCollectionSongs(songs, artists, emptyMessage, playlistId = null, albumId = null) {
     if (!songs.length) {
         return `<div class="song-list-state">${emptyMessage}</div>`;
@@ -1148,15 +1177,15 @@ function renderCollectionSongs(songs, artists, emptyMessage, playlistId = null, 
             <span>Duracion</span>
         </div>
         ${songs.map((song, index) => `
-            <button class="song-row collection-song-row" type="button" data-collection-song="${index}" ${song.song_archivo_ruta ? "" : "disabled"}>
+            <button class="song-row collection-song-row" type="button" data-collection-song="${index}" data-collection-song-id="${song.song_id}" ${song.song_archivo_ruta ? "" : "disabled"}>
                 <span>${index + 1}</span>
                 <span>${escapeHtml(song.song_nombre || "Sin nombre")}</span>
                 <span>${escapeHtml(getArtistNameFromList(song.song_artista, artists))}</span>
                 <span class="song-actions">
                     <span id="collection-duration-${index}">${song.song_archivo_ruta ? "--:--" : "-"}</span>
-                    ${albumId && !isGuestSession() ? renderAlbumSongActions(song) : ""}
-                    ${playlistId && !isGuestSession() ? `<span class="remove-playlist-song-btn" role="button" tabindex="0" data-remove-playlist-song="${song.song_id}" aria-label="Quitar cancion">×</span>` : ""}
-                    ${!albumId && !isGuestSession() ? `<span class="add-playlist-btn" role="button" tabindex="0" data-add-song="${song.song_id}">+</span>` : ""}
+                    ${albumId && !isGuestSession() ? renderSongOptionsActions(song) : ""}
+                    ${playlistId && !isGuestSession() ? renderSongOptionsActions(song, true) : ""}
+                    ${!albumId && !playlistId && !isGuestSession() ? `<span class="add-playlist-btn" role="button" tabindex="0" data-add-song="${song.song_id}">+</span>` : ""}
                     ${!isGuestSession() ? `<span class="like-song-btn ${likedSongIds.includes(song.song_id) ? "liked" : ""}" role="button" tabindex="0" data-like-song="${song.song_id}">${likedSongIds.includes(song.song_id) ? "♥" : "♡"}</span>` : ""}
                 </span>
             </button>
@@ -1164,13 +1193,13 @@ function renderCollectionSongs(songs, artists, emptyMessage, playlistId = null, 
     `;
 }
 
-function renderAlbumSongActions(song) {
+function renderSongOptionsActions(song, canRemoveFromPlaylist = false) {
     return `
-        <span class="album-song-actions">
-            <span class="album-song-menu-btn" role="button" tabindex="0" data-album-song-menu="${song.song_id}" aria-label="Opciones de cancion">...</span>
-            <span class="album-song-options-menu">
-                <span role="button" tabindex="0" data-album-add-song="${song.song_id}">Agregar a playlist</span>
-                <span class="danger" role="button" tabindex="0" data-remove-album-song="${song.song_id}">Borrar cancion</span>
+        <span class="song-options-actions">
+            <span class="song-options-menu-btn" role="button" tabindex="0" data-song-options-menu="${song.song_id}" aria-label="Opciones de cancion">...</span>
+            <span class="song-options-menu">
+                <span role="button" tabindex="0" data-menu-add-song="${song.song_id}">Agregar a playlist</span>
+                ${canRemoveFromPlaylist ? `<span class="danger" role="button" tabindex="0" data-remove-playlist-song="${song.song_id}">Quitar de playlist</span>` : ""}
             </span>
         </span>
     `;
@@ -1206,6 +1235,20 @@ function formatDuration(seconds) {
 function markActiveCollectionSong(index) {
     document.querySelectorAll(".collection-song-row").forEach((row) => row.classList.remove("active"));
     document.querySelector(`[data-collection-song="${index}"]`)?.classList.add("active");
+}
+
+function markActiveCollectionSongById(songId) {
+    if (!songId) {
+        return;
+    }
+
+    const activeRow = document.querySelector(`[data-collection-song-id="${songId}"]`);
+    if (!activeRow) {
+        return;
+    }
+
+    document.querySelectorAll(".collection-song-row").forEach((row) => row.classList.remove("active"));
+    activeRow.classList.add("active");
 }
 
 function playSearchSong(song) {

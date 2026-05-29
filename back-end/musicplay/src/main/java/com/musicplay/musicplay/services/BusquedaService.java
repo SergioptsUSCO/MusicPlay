@@ -1,9 +1,11 @@
 package com.musicplay.musicplay.services;
 
 import java.text.Normalizer;
+import java.util.LinkedHashSet;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.function.Function;
 
 import org.springframework.stereotype.Service;
@@ -31,20 +33,44 @@ public class BusquedaService {
 
     public BusquedaResponse buscar(String q) {
         String query = normalize(q);
+        List<Cancion> canciones = cancionRepo.findAll();
+        List<Album> albumes = albumRepo.findAll();
+        List<Artista> artistas = artistaRepo.findAll();
 
         if (query.isBlank()) {
             return new BusquedaResponse(
-                    cancionRepo.findAll(),
-                    albumRepo.findAll(),
-                    artistaRepo.findAll()
+                    canciones,
+                    albumes,
+                    artistas
             );
         }
 
+        List<Cancion> cancionesFiltradas = filterAndRank(canciones, query, Cancion::getSong_nombre);
+        List<Album> albumesFiltrados = filterAndRank(albumes, query, Album::getAlbum_nombre);
+        List<Artista> artistasFiltrados = filterAndRank(artistas, query, Artista::getArtista_nombre);
+
         return new BusquedaResponse(
-                filterAndRank(cancionRepo.findAll(), query, Cancion::getSong_nombre),
-                filterAndRank(albumRepo.findAll(), query, Album::getAlbum_nombre),
-                filterAndRank(artistaRepo.findAll(), query, Artista::getArtista_nombre)
+                cancionesFiltradas,
+                albumesFiltrados,
+                artistasFiltrados,
+                artistasRelacionados(cancionesFiltradas, albumesFiltrados, artistasFiltrados, artistas)
         );
+    }
+
+    private List<Artista> artistasRelacionados(
+            List<Cancion> canciones,
+            List<Album> albumes,
+            List<Artista> artistasFiltrados,
+            List<Artista> artistas) {
+        Set<Long> ids = new LinkedHashSet<>();
+
+        artistasFiltrados.forEach(artista -> ids.add(artista.getArtista_id()));
+        canciones.forEach(cancion -> ids.add(cancion.getSong_artista()));
+        albumes.forEach(album -> ids.add(album.getArtista_album()));
+
+        return artistas.stream()
+                .filter(artista -> ids.contains(artista.getArtista_id()))
+                .toList();
     }
 
     private <T> List<T> filterAndRank(List<T> items, String query, Function<T, String> nameGetter) {

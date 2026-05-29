@@ -35,6 +35,10 @@ public class Genero {
     @OneToMany(mappedBy = "genero", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Cancion> canciones = new ArrayList<>();
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "genero", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<UsuarioGeneroPreferido> usuariosPreferidos = new ArrayList<>();
+
     public Genero(Long id, String nombre_genero) {
         super();
         this.id = id;

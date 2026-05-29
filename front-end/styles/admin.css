@@ -116,6 +116,11 @@ h1 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.one-col {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 520px;
+}
+
 label {
     display: grid;
     gap: 7px;

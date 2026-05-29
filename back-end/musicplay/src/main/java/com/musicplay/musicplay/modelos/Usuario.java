@@ -44,6 +44,12 @@ public class Usuario {
     @Column(name = "usuario_correo")
     private String usuario_correo;
 
+    @Column(name = "usuario_inicios_sesion", nullable = false, columnDefinition = "integer default 0")
+    private Integer usuario_inicios_sesion = 0;
+
+    @Column(name = "usuario_preferencias_configuradas", nullable = false, columnDefinition = "boolean default false")
+    private Boolean usuario_preferencias_configuradas = false;
+
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "rol_id", insertable = false, updatable = false)
@@ -64,6 +70,14 @@ public class Usuario {
     @JsonIgnore
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<UsuarioOAuth> oauthAccounts = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<UsuarioGeneroPreferido> generosPreferidos = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<UsuarioArtistaPreferido> artistasPreferidos = new ArrayList<>();
 
     @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY)

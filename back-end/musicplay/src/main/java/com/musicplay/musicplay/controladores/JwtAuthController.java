@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.musicplay.musicplay.dto.JwtResponse;
 import com.musicplay.musicplay.dto.LoginRequest;
 import com.musicplay.musicplay.security.JwtUtils;
+import com.musicplay.musicplay.services.AuthService;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -25,6 +26,9 @@ public class JwtAuthController {
     @Autowired
     private JwtUtils jwtUtils;
 
+    @Autowired
+    private AuthService authService;
+
     @PostMapping("/token")
     public ResponseEntity<JwtResponse> token(@RequestBody LoginRequest request) {
         Authentication authentication = authenticationManager.authenticate(
@@ -35,6 +39,7 @@ public class JwtAuthController {
         );
 
         String jwt = jwtUtils.generateToken(authentication);
+        authService.registrarInicioSesion(authentication.getName());
         return ResponseEntity.ok(new JwtResponse(jwt));
     }
 }
