@@ -46,16 +46,17 @@ export async function loadHomeView() {
                     <img src="../assets/logo.svg" alt="MusicPlay Logo" width="40" height="40">
                 </div>
                 <nav class="home-footer-nav" aria-label="Footer">
-                    <a href="#" data-home-link>Inicio</a>
-                    <a href="#" data-home-link>Artistas</a>
-                    <a href="#" data-home-link>Albumes</a>
-                    <a href="#" data-home-link>Reciente</a>
+                    <button type="button" data-home-action="inicio">Inicio</button>
+                    <button type="button" data-home-action="artistas">Artistas</button>
+                    <button type="button" data-home-action="albumes">Albumes</button>
+                    <button type="button" data-home-action="reciente">Reciente</button>
                 </nav>
             </div>
         </footer>
     `;
 
     setupPlayerControls();
+    setupHomeFooterActions();
     await loadSongs();
 }
 
@@ -73,7 +74,7 @@ async function loadSongs() {
             throw new Error("No se pudieron cargar las canciones");
         }
 
-        songs = await songsResponse.json();
+        songs = sortSongsAlphabetically(await songsResponse.json());
         artists = artistsResponse.ok ? await artistsResponse.json() : [];
         likedSongIds = await loadLikedSongIds();
 
@@ -86,6 +87,43 @@ async function loadSongs() {
         count.textContent = "Sin datos";
         renderSuggestionsState("No se pudieron cargar las sugerencias.");
     }
+}
+
+function setupHomeFooterActions() {
+    document.querySelectorAll("[data-home-action]").forEach((button) => {
+        button.addEventListener("click", () => {
+            const action = button.dataset.homeAction;
+
+            if (action === "inicio") {
+                loadHomeView();
+                return;
+            }
+
+            if (action === "reciente") {
+                document.querySelector(".songs-library")?.scrollIntoView({ behavior: "smooth" });
+                return;
+            }
+
+            window.dispatchEvent(new CustomEvent("musicplay:home-footer-action", {
+                detail: { action }
+            }));
+        });
+    });
+}
+
+function sortSongsAlphabetically(sourceSongs) {
+    return [...sourceSongs].sort((first, second) => {
+        const firstName = normalizeText(first.song_nombre || "");
+        const secondName = normalizeText(second.song_nombre || "");
+        return firstName.localeCompare(secondName, "es", { sensitivity: "base" });
+    });
+}
+
+function normalizeText(value) {
+    return String(value)
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase();
 }
 
 async function loadSuggestions() {

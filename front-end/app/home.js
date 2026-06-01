@@ -63,6 +63,17 @@ window.addEventListener("musicplay:view-artist", (event) => {
     loadArtistDetailView(Number(event.detail.artistId));
 });
 
+window.addEventListener("musicplay:home-footer-action", (event) => {
+    if (event.detail.action === "artistas") {
+        loadSearchView();
+        return;
+    }
+
+    if (event.detail.action === "albumes") {
+        loadFirstAlbumView();
+    }
+});
+
 async function loadCurrentUser() {
     if (isGuestSession()) {
         if (profileInitial) {

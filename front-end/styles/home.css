@@ -577,12 +577,14 @@ html{
     flex-wrap: wrap;
 }
 
-.home-footer-nav a{
+.home-footer-nav button{
+    border: 0;
+    background: transparent;
     color: #b3b3b3;
-    text-decoration: none;
+    padding: 0;
 }
 
-.home-footer-nav a:hover{
+.home-footer-nav button:hover{
     color: white;
 }
 
