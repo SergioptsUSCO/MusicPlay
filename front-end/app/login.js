@@ -78,7 +78,14 @@ if (!form) {
                     }
 
                     console.log("Inicio de sesión exitoso");
-                    window.location.href = "home.html";
+
+                    const userResponse = await apiFetch("/api/auth/me");
+                    if (userResponse.ok) {
+                        const user = await userResponse.json();
+                        window.location.href = user.usuario_preferencias_configuradas ? "home.html" : "preferencias.html";
+                    } else {
+                        window.location.href = "home.html";
+                    }
                     return;
                 }
 

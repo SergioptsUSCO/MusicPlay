@@ -218,11 +218,14 @@ public class CancionController {
     public ResponseEntity<Album> obtenerAlbumDeCancion(@PathVariable @NonNull Long song_id) {
         List<CancionesAlbum> relaciones = cancionesAlbumRepo.buscarPorCancion(song_id);
 
-        if (relaciones.isEmpty()) {
-            return ResponseEntity.notFound().build();
+        if (!relaciones.isEmpty()) {
+            return albumRepo.findById(relaciones.get(0).getAlbum_id())
+                    .map(ResponseEntity::ok)
+                    .orElseGet(() -> ResponseEntity.notFound().build());
         }
 
-        return albumRepo.findById(relaciones.get(0).getAlbum_id())
+        return repositorio.findById(song_id)
+                .flatMap(cancion -> albumRepo.buscarPorArtista(cancion.getSong_artista()).stream().findFirst())
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }

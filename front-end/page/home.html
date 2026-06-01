@@ -66,6 +66,11 @@
         <button id="prev-btn" type="button" aria-label="Cancion anterior">⏮</button>
         <button class="play-btn" id="play-btn" type="button" aria-label="Reproducir">▶</button>
         <button id="next-btn" type="button" aria-label="Siguiente cancion">⏭</button>
+        <button id="view-song-btn" class="view-song-btn" type="button" aria-label="Ver cancion" title="Ver cancion" disabled>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 5h7v2H7v10h10v-5h2v7H5V5Zm9 0h5v5h-2V8.41l-6.29 6.3-1.42-1.42 6.3-6.29H14V5Z"></path>
+            </svg>
+        </button>
         <div class="player-progress">
             <span id="current-time">0:00</span>
             <input id="progress-range" type="range" min="0" max="100" value="0">

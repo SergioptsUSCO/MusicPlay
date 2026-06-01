@@ -55,6 +55,14 @@ window.addEventListener("musicplay:playback-song-changed", (event) => {
     markActiveCollectionSongById(event.detail.songId);
 });
 
+window.addEventListener("musicplay:view-album", (event) => {
+    loadAlbumDetailView(Number(event.detail.albumId));
+});
+
+window.addEventListener("musicplay:view-artist", (event) => {
+    loadArtistDetailView(Number(event.detail.artistId));
+});
+
 async function loadCurrentUser() {
     if (isGuestSession()) {
         if (profileInitial) {
@@ -71,7 +79,7 @@ async function loadCurrentUser() {
         }
 
         renderGuestLibrary();
-        return;
+        return true;
     }
 
     try {
@@ -88,6 +96,11 @@ async function loadCurrentUser() {
         }
 
         const user = await response.json();
+        if (!user.usuario_preferencias_configuradas) {
+            window.location.href = "preferencias.html";
+            return false;
+        }
+
         const name = user.usuario_nombre || user.usuario_correo || "";
         const initial = name.trim().charAt(0).toUpperCase();
 
@@ -101,8 +114,10 @@ async function loadCurrentUser() {
         }
 
         await renderUserLibrary();
+        return true;
     } catch (error) {
         console.error("Error al cargar el usuario actual:", error);
+        return true;
     }
 }
 
@@ -1368,5 +1383,8 @@ window.closeSidebar = function(){
     }
 }
 
-loadCurrentUser();
-loadHomeView();
+loadCurrentUser().then((shouldLoadHome) => {
+    if (shouldLoadHome !== false) {
+        loadHomeView();
+    }
+});

@@ -1,4 +1,9 @@
-export const API_BASE_URL = "https://rq6pq57v-8080.use2.devtunnels.ms";
+const LOCAL_API_BASE_URL = "http://localhost:8080";
+const REMOTE_API_BASE_URL = "https://rq6pq57v-8080.use2.devtunnels.ms";
+
+export const API_BASE_URL = ["localhost", "127.0.0.1"].includes(window.location.hostname)
+    ? LOCAL_API_BASE_URL
+    : REMOTE_API_BASE_URL;
 export const GOOGLE_OAUTH_URL = `${API_BASE_URL}/oauth2/authorization/google`;
 
 export function getAuthToken() {

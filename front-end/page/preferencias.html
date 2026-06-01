@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MusicPlay | Preferencias</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/logo.svg">
+    <link rel="stylesheet" href="../styles/preferencias.css">
+    <link rel="stylesheet" href="../styles/fuentes.css">
+</head>
+<body>
+    <main class="preferences-shell">
+        <header class="preferences-header">
+            <a class="brand" href="home.html">
+                <img src="../assets/logo.svg" alt="MusicPlay">
+                <span>MusicPlay</span>
+            </a>
+            <button id="logout-btn" class="secondary-action" type="button">Cerrar Sesion</button>
+        </header>
+
+        <section class="preferences-content">
+            <div class="preferences-copy">
+                <p>Primer paso</p>
+                <h1>Elige tu artista preferido</h1>
+                <span>Usaremos esta senal junto con tu historial de reproduccion para recomendar canciones con mejor punteria.</span>
+            </div>
+
+            <form id="preferences-form" class="artist-picker">
+                <div id="artists-grid" class="artists-grid">
+                    <div class="loading-state">Cargando artistas...</div>
+                </div>
+
+                <p id="preferences-error" class="form-error" aria-live="polite"></p>
+
+                <button id="save-preferences" class="primary-action" type="submit" disabled>
+                    Continuar
+                </button>
+            </form>
+        </section>
+    </main>
+
+    <script type="module" src="../app/preferencias.js"></script>
+</body>
+</html>

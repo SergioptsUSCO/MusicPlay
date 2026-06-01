@@ -1,2 +1,6 @@
 .env
 back-end/musicplay/uploads/
+__pycache__/
+*.pyc
+back-end/musicplay/target/
+tools/artifacts/
